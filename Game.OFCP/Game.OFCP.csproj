@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{01BA89C5-FA13-49C9-A095-FBD2C9D72FDC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Game.OFCP</RootNamespace>
+    <AssemblyName>Game.OFCP</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AggregateBase.cs" />
+    <Compile Include="Card.cs" />
+    <Compile Include="EventHandlers\GameEventHandler.cs" />
+    <Compile Include="EventHandlers\TableEventHandler.cs" />
+    <Compile Include="GameCommandHandlers\GameCommandHandler.cs" />
+    <Compile Include="GameCommands\StartNewGameCommand.cs" />
+    <Compile Include="MemoryPlayerProjection.cs" />
+    <Compile Include="IPlayerReadStore.cs" />
+    <Compile Include="TableEvents\AllPlayersReadyEvent.cs" />
+    <Compile Include="GameEvents\DeckShuffledEvent.cs" />
+    <Compile Include="GameEvents\Event.cs" />
+    <Compile Include="GameEvents\GameCreatedEvent.cs" />
+    <Compile Include="GameEvents\GameStartedEvent.cs" />
+    <Compile Include="GameEvents\NewRoundStarted.cs" />
+    <Compile Include="GameEvents\PlayerDealtCards.cs" />
+    <Compile Include="GameEvents\PlayerJoinedGame.cs" />
+    <Compile Include="MemoryEventStore.cs" />
+    <Compile Include="IRepository.cs" />
+    <Compile Include="Repository.cs" />
+    <Compile Include="TableCommands\SetPlayerReadyCommand.cs" />
+    <Compile Include="TableEvents\PlayerSeatedEvent.cs" />
+    <Compile Include="TableEvents\PlayerLeftTable.cs" />
+    <Compile Include="GameEvents\PlayerQuitGame.cs" />
+    <Compile Include="TableEvents\PlayerReadyEvent.cs" />
+    <Compile Include="TableEvents\TableCreatedEvent.cs" />
+    <Compile Include="Games\Game.cs" />
+    <Compile Include="GameFactory.cs" />
+    <Compile Include="Games\OFCP_Game.cs" />
+    <Compile Include="Hand.cs" />
+    <Compile Include="IEventStore.cs" />
+    <Compile Include="TableCommandHandlers\TableCommandHandler.cs" />
+    <Compile Include="TableCommands\CreateNewTableCommand.cs" />
+    <Compile Include="TableCommands\RemovePlayerCommand.cs" />
+    <Compile Include="TableCommands\SeatPlayerCommand.cs" />
+    <Compile Include="Player.cs" />
+    <Compile Include="StandardDeck.cs" />
+    <Compile Include="HandEvaluator.cs" />
+    <Compile Include="IShuffler.cs" />
+    <Compile Include="KnuthShuffler.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tables\Table.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
+      <Project>{354a774e-c089-4bf6-b746-39addcb15c7f}</Project>
+      <Name>Infrastructure %28Infrastructure\Infrastructure%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XPokerEval.CactusKev.CSharp\XPokerEval.CactusKev.CSharp.csproj">
+      <Project>{424b1b34-0a7b-4f82-82ff-8c28807f6189}</Project>
+      <Name>XPokerEval.CactusKev.CSharp</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

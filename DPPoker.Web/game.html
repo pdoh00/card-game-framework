@@ -1,0 +1,454 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>驢沖床 Poker</title>
+
+    <!-- Scripts -->
+    <script src="Scripts/jquery-1.8.2.min.js"></script>
+    <script src="Scripts/jquery-ui-1.9.0.min.js"></script>
+    <script src="Scripts/jquery.signalR-0.5.3.min.js"></script>
+    <script src="http://localhost:5857/signalr/hubs"></script>
+    <script src="Scripts/moment.min.js"></script>
+
+    <!-- Styles -->
+    <link href="Content/stylesheets/normalize.css" rel="stylesheet" />
+    <link href="Content/stylesheets/app.css" rel="stylesheet" />
+    <link href="Content/stylesheets/game.css" rel="stylesheet" />
+    <link href="Content/stylesheets/cardsprites.css" rel="stylesheet" />
+
+    <script>
+        $(document).ready(function () {
+            
+            var tableId;
+
+            $.support.cors = true;
+
+            $.connection.hub.url = "http://localhost:5857/signalr";
+            var pokerServer = $.connection.pokerServer;
+
+            $.connection.hub.sending(function () {
+                clientMessage('Establishing connection to server', 'info');
+            });
+            $.connection.hub.received(function (data) {
+                clientMessage('Data received...' + JSON.stringify(data), 'info');
+            });
+            $.connection.hub.error(function (error) {
+                clientMessage(error, 'error');
+            });
+            $.connection.hub.stateChanged(function (change) {
+                if (change.newState === $.signalR.connectionState.reconnecting) {
+                    clientMessage('Re-connecting', 'info');
+                }
+                else if (change.newState === $.signalR.connectionState.connected) {
+                    clientMessage('The server is online', 'info');
+                }
+            });
+            $.connection.hub.reconnected(function () {
+                clientMessage('Reconnected', 'info');
+            });
+
+            //any server broadcasted messages.  Usually debug info
+            pokerServer.broadcastToConsole = function (message) {
+                serverMessage(message, 'info');
+            };
+            pokerServer.dealCards = function (cards) {
+                serverMessage(JSON.stringify(cards), 'info');
+
+                $.each(cards, function (index, item) {
+                    
+                    var element = $('.my-cards .my-card-pos' + index);
+
+                    //clear out classes
+                    element.attr('class', '');
+
+                    //add classes back
+                    element.addClass('drag');
+                    element.addClass('my-card-pos' + index);
+
+                    //set card class
+                    $('.my-cards .my-card-pos' + index).addClass('_' + item);
+                });
+            };
+            pokerServer.playerTookSeat = function (name, position, avatar) {
+                //update the seat and show the player info
+                //show that the player is ready
+                $('.avatar-contents .position:contains("' + position + '")').parent().children('.name-container').children('.name').text(name);
+                $('.avatar-contents .position:contains("' + position + '")').parent().children('.name-container').children('.points').text('(' + 0 + ')');
+                $('.avatar-contents .position:contains("' + position + '")').parent().children('.name-container').children('.points').show();
+                $('.avatar-contents .position:contains("' + position + '")').parent().children('.name-container').removeClass('empty-avatar');
+                $('.avatar-contents .position:contains("' + position + '")').parent().children('.picture').attr('src', 'content/images/default-avatar-image.png');
+                $('.avatar-contents .position:contains("' + position + '")').parent().children('.picture').show();
+            };
+            pokerServer.setPlayerState = function (players) {
+                
+                //set remaining positions
+                for (var i = 1; i < players.length + 1; i++) {
+
+                    var spot = '';
+                    switch (i) {
+                        case 1:
+                            $('.left .position').text('Position ' + i);
+                            spot = 'left';
+                            break;
+                        case 2:
+                            $('.top .position').text('Position ' + i);
+                            spot = 'top';
+                            break;
+                        case 3:
+                            $('.right .position').text('Position ' + i);
+                            spot = 'right';
+                            break;
+                        case 4:
+                            $('.bottom .position').text('Position ' + i);
+                            $('.take-seat').hide();
+                            $('.leave-game').hide();
+                            spot = 'bottom';
+                            break;
+                        default:
+                    }
+
+                    $('.' + spot + ' .name-container .name').text(players[i - 1]);
+                    $('.' + spot + ' .name-container .points').text('(' + 0 + ')');
+                    $('.' + spot + ' .name-container .points').show();
+                    $('.' + spot + ' .name-container').removeClass('empty-avatar');
+                    $('.' + spot + ' .picture').attr('src', 'content/images/default-avatar-image.png');
+                    $('.' + spot + ' .picture').show();
+                }
+            }
+            pokerServer.playerSetCards = function (position) {
+                //show that this player has set their cards
+            };
+            pokerServer.playerRegistered = function (playerId, position) {
+                //store player id
+                sessionStorage.setItem('playerId', playerId);
+                
+                //hide take seat button
+                $('.take-seat').hide();
+
+                //show leave table button
+                $('.leave-game').show();
+
+                //update user box
+                var playerName = sessionStorage.getItem('playerName');
+                $('.bottom .name-container .name').text(playerName);
+                $('.bottom .name-container .points').text('(' + 0 + ')');
+                $('.bottom .name-container .points').show();
+                $('.bottom .name-container').removeClass('empty-avatar');
+                $('.bottom .position').text('Position ' + position);
+                $('.bottom .picture').attr('src', 'content/images/default-avatar-image.png');
+                $('.bottom .picture').show();
+
+                //set remaining positions
+                for (var i = 1; i < 4; i++) {
+
+                    var pos = position + i;
+
+                    if (pos > 4) {
+                        pos = (position + i) - 4;
+                    }
+
+                    switch (i) {
+                        case 1:
+                            $('.left .position').text('Position ' + pos);
+                            break;
+                        case 2:
+                            $('.top .position').text('Position ' + pos);
+                            break;
+                        case 3:
+                            $('.right .position').text('Position ' + pos);
+                            break;
+                        default:
+                    }
+                }
+            };
+            pokerServer.dealCards = function (cards) {
+                //display my cards
+                $.each(cards, function (index, item) {
+
+                    var element = $('.my-cards .my-card-pos' + index);
+
+                    //clear out classes
+                    element.attr('class', '');
+
+                    //add classes back
+                    element.addClass('drag');
+                    element.addClass('my-card-pos' + index);
+
+                    //set card class
+                    $('.my-cards .my-card-pos' + index).addClass('_' + item);
+                });
+            };
+            pokerServer.playerReadiedUp = function (position) {
+                alert(position + ' readied up');
+                //show that the player is ready
+                $('.avatar-contents .position:contains("' + position + '")').parent().addClass('player-ready', 500);
+            };
+            pokerServer.playerCardsRearranged = function (position, cards) {
+                //update the cards at that position
+            };
+            pokerServer.gameStarted = function (gameId, timestamp) {
+                //alert that the game has started
+                //start timer for the 1st round
+            };
+            pokerServer.deckShuffled = function () {
+                //play deck shuffle sound & animation
+            };
+            
+            // Start the connection
+            $.connection.hub.start({ jsonp: true }, function () {
+                clientMessage('Connection started!', 'info');
+
+                tableId = pokerServer.getTableId();
+
+                //request player positions
+                pokerServer.getPlayerPositionsAtTable(tableId);
+            });
+
+            //take seat handler
+            $('.take-seat').click(function () {
+                var promptName = prompt('Please enter your name.', '');
+                if (promptName !== null && promptName !== "") {
+                    sessionStorage.setItem('playerName', promptName);
+                    pokerServer.takeSeat(tableId, promptName);
+                } else {
+                    alert('You must enter your name to take a seat.  Try again.');
+                }
+            });
+
+            //leave table handler
+            $('.leave-game').click(function () {
+                pokerServer.leaveGame();
+
+                //show take seat button
+                $('.take-seat').show();
+
+                //hide leave table button
+                $('.leave-game').hide();
+
+                //update user box
+                $('.bottom .name-container .name').text('Empty');
+                $('.bottom .name-container .points').text('(' + 0 + ')');
+                $('.bottom .name-container .points').hide();
+                $('.bottom .picture').hide();
+                $('.bottom .name-container').addClass('empty-avatar');
+            });
+
+            $('.deal-cards').click(function () {
+                pokerServer.getCards();
+            });
+
+            $("#sortableSource1").sortable({
+                connectWith: ".connectedSortable"
+            }).disableSelection();
+            $("#sortableSource2").sortable({
+                connectWith: ".connectedSortable"
+            }).disableSelection();
+            $("#sortable1").sortable({
+                connectWith: ".connectedSortable"
+            }).disableSelection();
+            $("#sortable2").sortable({
+                connectWith: ".connectedSortable"
+            }).disableSelection();
+            $("#sortable3").sortable({
+                connectWith: ".connectedSortable"
+            }).disableSelection();
+
+
+        });
+
+        function serverMessage(message, level) {
+            var serverMessage = '<' + moment(Date.now()).format('hh:mm:ss') + '> SERVER:::==> ' + message;
+            switch (level) {
+                case 'error':
+                    console.error(serverMessage);
+                    break;
+                case 'warn':
+                    console.warn(serverMessage);
+                    break;
+                case 'log':
+                    console.log(serverMessage);
+                    break;
+                case 'info':
+                    console.info(serverMessage);
+                    break;
+                default:
+                    console.log(serverMessage);
+            }
+        }
+        function clientMessage(message, level) {
+            var clientMessage = '<' + moment(Date.now()).format('hh:mm:ss') + '> CLIENT:::==> ' + message;
+            switch (level) {
+                case 'error':
+                    console.error(clientMessage);
+                    break;
+                case 'warn':
+                    console.warn(clientMessage);
+                    break;
+                case 'log':
+                    console.log(clientMessage);
+                    break;
+                case 'info':
+                    console.info(clientMessage);
+                    break;
+                default:
+                    console.log(clientMessage);
+            }
+        }
+    </script>
+</head>
+<body>
+    <input class="deal-cards" type="button" value="Deal Cards" />
+
+    <div class="table">
+
+        <!-- AVATAR CONTAINERS -->
+        <div class="top">
+            <div class="avatar-contents">
+                <img class="picture" style="display: none;" />
+                <div class="name-container empty-avatar">
+                    <span class="name">Empty</span>
+                    <div class="points" style="display: none;">(0)</div>
+                </div>
+                <div class="position"></div>
+            </div>
+        </div>
+        <div class="bottom">
+            <div class="avatar-contents">
+                <img class="picture" style="display: none;" />
+                <div class="name-container empty-avatar">
+                    <span class="name">Empty</span>
+                    <div class="points" style="display: none;">(0)</div>
+                </div>
+                <div class="position"></div>
+            </div>
+            <input class="take-seat" type="button" value="Sit Down" />
+            <input class="leave-game" type="button" value="Leave Game" style="display: none;" />
+        </div>
+        <div class="left">
+            <div class="avatar-contents">
+                <img class="picture" style="display: none;" />
+                <div class="name-container empty-avatar">
+                    <span class="name">Empty</span>
+                    <div class="points" style="display: none;">(0)</div>
+                </div>
+                <div class="position"></div>
+            </div>
+        </div>
+        <div class="right">
+            <div class="avatar-contents">
+                <img class="picture" style="display: none;" />
+                <div class="name-container empty-avatar">
+                    <span class="name">Empty</span>
+                    <div class="points" style="display: none;">(0)</div>
+                </div>
+                <div class="position"></div>
+            </div>
+        </div>
+
+        <!-- CARD SETS -->
+        <div class="topSet">
+            <div class="small-card-set">
+                <div class="sm-card-pos0 small-card-empty"></div>
+                <div class="sm-card-pos1 small-card-empty"></div>
+                <div class="sm-card-pos2 small-card-empty"></div>
+                <div class="sm-card-pos3 small-card-empty"></div>
+                <div class="sm-card-pos4 small-card-empty"></div>
+                <div class="sm-card-pos5 small-card-empty"></div>
+                <div class="sm-card-pos6 small-card-empty"></div>
+                <div class="sm-card-pos7 small-card-empty"></div>
+                <div class="sm-card-pos8 small-card-empty"></div>
+                <div class="sm-card-pos9 small-card-empty"></div>
+                <div class="sm-card-pos10 small-card-empty"></div>
+                <div class="sm-card-pos11 small-card-empty"></div>
+                <div class="sm-card-pos12 small-card-empty"></div>
+            </div>
+        </div>
+        <div class="leftSet">
+            <div class="small-card-set">
+                <div class="sm-card-pos0 small-card-empty"></div>
+                <div class="sm-card-pos1 small-card-empty"></div>
+                <div class="sm-card-pos2 small-card-empty"></div>
+                <div class="sm-card-pos3 small-card-empty"></div>
+                <div class="sm-card-pos4 small-card-empty"></div>
+                <div class="sm-card-pos5 small-card-empty"></div>
+                <div class="sm-card-pos6 small-card-empty"></div>
+                <div class="sm-card-pos7 small-card-empty"></div>
+                <div class="sm-card-pos8 small-card-empty"></div>
+                <div class="sm-card-pos9 small-card-empty"></div>
+                <div class="sm-card-pos10 small-card-empty"></div>
+                <div class="sm-card-pos11 small-card-empty"></div>
+                <div class="sm-card-pos12 small-card-empty"></div>
+            </div>
+        </div>
+        <div class="rightSet">
+            <div class="small-card-set">
+                <div class="sm-card-pos0 small-card-empty"></div>
+                <div class="sm-card-pos1 small-card-empty"></div>
+                <div class="sm-card-pos2 small-card-empty"></div>
+                <div class="sm-card-pos3 small-card-empty"></div>
+                <div class="sm-card-pos4 small-card-empty"></div>
+                <div class="sm-card-pos5 small-card-empty"></div>
+                <div class="sm-card-pos6 small-card-empty"></div>
+                <div class="sm-card-pos7 small-card-empty"></div>
+                <div class="sm-card-pos8 small-card-empty"></div>
+                <div class="sm-card-pos9 small-card-empty"></div>
+                <div class="sm-card-pos10 small-card-empty"></div>
+                <div class="sm-card-pos11 small-card-empty"></div>
+                <div class="sm-card-pos12 small-card-empty"></div>
+            </div>
+        </div>
+        <div class="bottomSet">
+            <div class="large-card-set">
+                <div>
+                    <ul id="sortable1" class="connectedSortable">
+                    </ul>
+                </div>
+                <div>
+                    <ul id="sortable2" class="connectedSortable">
+                    </ul>
+                </div>
+                <div>
+                    <ul id="sortable3" class="connectedSortable">
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="my-cards">
+        <div class="large-card-set">
+            <div>
+                <ul id="sortableSource1" class="connectedSortable">
+                    <li class="my-card-pos0"></li>
+                    <li class="my-card-pos1"></li>
+                    <li class="my-card-pos2"></li>
+                    <li class="my-card-pos3"></li>
+                    <li class="my-card-pos4"></li>
+                    <li class="my-card-pos5"></li>
+                    <li class="my-card-pos6"></li>
+                </ul>
+            </div>
+            <div>
+                <ul id="sortableSource2" class="connectedSortable">
+                    <li class="my-card-pos7"></li>
+                    <li class="my-card-pos8"></li>
+                    <li class="my-card-pos9"></li>
+                    <li class="my-card-pos10"></li>
+                    <li class="my-card-pos11"></li>
+                    <li class="my-card-pos12"></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="history">
+
+    </div>
+
+    <div class="chat"> 
+
+    </div>
+
+</body>
+</html>

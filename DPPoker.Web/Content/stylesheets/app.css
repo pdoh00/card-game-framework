@@ -1,0 +1,24 @@
+﻿body {
+    margin: 0px;
+    background-image: url('../images/chinese_village.jpg');
+    background-repeat: no-repeat;
+    font-family: Arial, sans-serif;
+}
+
+.my-cards
+{
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}
+.history
+{
+    width: 150px;
+    height: 600px;
+    float: right;
+}
+.chat
+{
+    width: 200px;
+    height: 150px;
+}

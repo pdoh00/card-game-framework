@@ -1,0 +1,101 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Account", "Account", "{73258834-75D8-4AE3-A0B2-728A1F8F97C6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Registration", "Registration", "{DA20042E-BC51-40B9-A90E-0AA97E01117B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{BCE5201D-BA66-449D-8D0A-59BFA875C6EB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Game", "Game", "{C52DBAD1-AFD6-47B7-8F17-9D1E295BAADF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.OFCP", "Game.OFCP\Game.OFCP.csproj", "{01BA89C5-FA13-49C9-A095-FBD2C9D72FDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameDriver", "GameDriver\GameDriver.csproj", "{D4338B80-85D4-4FA8-B4A6-E68F8CC2F50A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XPokerEval.CactusKev.CSharp", "XPokerEval.CactusKev.CSharp\XPokerEval.CactusKev.CSharp.csproj", "{424B1B34-0A7B-4F82-82FF-8C28807F6189}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XPokerEvalConsole", "XPokerEvalConsole\XPokerEvalConsole.csproj", "{64732AC9-2F43-4306-A913-9C3F8D60B652}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DPPoker.Web", "DPPoker.Web\DPPoker.Web.csproj", "{C18ADB66-3BC6-4707-ACEF-8853CEBD3E82}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DPPoker.Web.Tests", "DPPoker.Web.Tests\DPPoker.Web.Tests.csproj", "{84ACB42F-E194-4422-9A7D-58603DD00057}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{DE3D1536-BE66-4D3D-B24D-C7BA394DAFEF}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{C2A4DBB8-122D-478E-ABBA-E27D63D7DD76}"
+	ProjectSection(SolutionItems) = preProject
+		Assets\CardDeck2.png = Assets\CardDeck2.png
+		Assets\chinese_village.jpg = Assets\chinese_village.jpg
+		Assets\default-avatar-image.png = Assets\default-avatar-image.png
+		Assets\playeravatar.png = Assets\playeravatar.png
+		Assets\pokertable.png = Assets\pokertable.png
+		Assets\red-felt.jpg = Assets\red-felt.jpg
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{354A774E-C089-4BF6-B746-39ADDCB15C7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OFCP.Server", "OFCP.Server\OFCP.Server.csproj", "{3F163025-0D3A-4C10-BCFB-14CCF8ED55E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.OFCP.Tests", "Game.OFCP.Tests\Game.OFCP.Tests.csproj", "{2E2E6232-F5F3-4B30-B817-162193E3BF61}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{01BA89C5-FA13-49C9-A095-FBD2C9D72FDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01BA89C5-FA13-49C9-A095-FBD2C9D72FDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01BA89C5-FA13-49C9-A095-FBD2C9D72FDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01BA89C5-FA13-49C9-A095-FBD2C9D72FDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4338B80-85D4-4FA8-B4A6-E68F8CC2F50A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4338B80-85D4-4FA8-B4A6-E68F8CC2F50A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4338B80-85D4-4FA8-B4A6-E68F8CC2F50A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4338B80-85D4-4FA8-B4A6-E68F8CC2F50A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{424B1B34-0A7B-4F82-82FF-8C28807F6189}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{424B1B34-0A7B-4F82-82FF-8C28807F6189}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{424B1B34-0A7B-4F82-82FF-8C28807F6189}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{424B1B34-0A7B-4F82-82FF-8C28807F6189}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64732AC9-2F43-4306-A913-9C3F8D60B652}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64732AC9-2F43-4306-A913-9C3F8D60B652}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64732AC9-2F43-4306-A913-9C3F8D60B652}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64732AC9-2F43-4306-A913-9C3F8D60B652}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C18ADB66-3BC6-4707-ACEF-8853CEBD3E82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C18ADB66-3BC6-4707-ACEF-8853CEBD3E82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C18ADB66-3BC6-4707-ACEF-8853CEBD3E82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C18ADB66-3BC6-4707-ACEF-8853CEBD3E82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84ACB42F-E194-4422-9A7D-58603DD00057}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84ACB42F-E194-4422-9A7D-58603DD00057}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84ACB42F-E194-4422-9A7D-58603DD00057}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84ACB42F-E194-4422-9A7D-58603DD00057}.Release|Any CPU.Build.0 = Release|Any CPU
+		{354A774E-C089-4BF6-B746-39ADDCB15C7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{354A774E-C089-4BF6-B746-39ADDCB15C7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{354A774E-C089-4BF6-B746-39ADDCB15C7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{354A774E-C089-4BF6-B746-39ADDCB15C7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F163025-0D3A-4C10-BCFB-14CCF8ED55E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F163025-0D3A-4C10-BCFB-14CCF8ED55E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F163025-0D3A-4C10-BCFB-14CCF8ED55E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F163025-0D3A-4C10-BCFB-14CCF8ED55E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E2E6232-F5F3-4B30-B817-162193E3BF61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E2E6232-F5F3-4B30-B817-162193E3BF61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E2E6232-F5F3-4B30-B817-162193E3BF61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E2E6232-F5F3-4B30-B817-162193E3BF61}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{354A774E-C089-4BF6-B746-39ADDCB15C7F} = {BCE5201D-BA66-449D-8D0A-59BFA875C6EB}
+		{3F163025-0D3A-4C10-BCFB-14CCF8ED55E9} = {BCE5201D-BA66-449D-8D0A-59BFA875C6EB}
+		{01BA89C5-FA13-49C9-A095-FBD2C9D72FDC} = {C52DBAD1-AFD6-47B7-8F17-9D1E295BAADF}
+		{424B1B34-0A7B-4F82-82FF-8C28807F6189} = {C52DBAD1-AFD6-47B7-8F17-9D1E295BAADF}
+		{64732AC9-2F43-4306-A913-9C3F8D60B652} = {C52DBAD1-AFD6-47B7-8F17-9D1E295BAADF}
+		{2E2E6232-F5F3-4B30-B817-162193E3BF61} = {C52DBAD1-AFD6-47B7-8F17-9D1E295BAADF}
+	EndGlobalSection
+EndGlobal
