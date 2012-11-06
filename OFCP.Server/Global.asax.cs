@@ -15,6 +15,10 @@ using Game.OFCP.TableCommands;
 using Infrastructure;
 using OFCP.Server.Hubs;
 using SignalR;
+using SignalR.Autofac;
+using Autofac;
+using Autofac.Integration.Mvc;
+using System.Reflection;
 
 //using SignalR.Hosting.AspNet;
 //using SignalR.Infrastructure;
@@ -28,14 +32,6 @@ namespace OFCP.Server
     {
         protected void Application_Start()
         {
-            AreaRegistration.RegisterAllAreas();
-
-            WebApiConfig.Register(GlobalConfiguration.Configuration);
-            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
-            BundleConfig.RegisterBundles(BundleTable.Bundles);
-
-
             //boot strap
             MemoryTableProjection tableProjection = new MemoryTableProjection();
             MemoryPlayerProjection playerProjection = new MemoryPlayerProjection();
@@ -64,9 +60,29 @@ namespace OFCP.Server
             //posted in the lobby.
             commandBus.Send(new CreateNewTableCommand(Game.OFCP.Games.OFCP_Game.OFCP_GAME_TYPE));
 
-            SignalR.GlobalHost.DependencyResolver.Register(typeof(ITableProjection), () => tableProjection);
-            SignalR.GlobalHost.DependencyResolver.Register(typeof(IPlayerProjection), () => playerProjection);
-            SignalR.GlobalHost.DependencyResolver.Register(typeof(ICommandBus), () => commandBus);
+            //get builder
+            var builder = new ContainerBuilder();
+            builder.RegisterControllers(Assembly.GetExecutingAssembly());
+
+            //register instances
+            builder.RegisterInstance<ITableProjection>(tableProjection).SingleInstance();
+            builder.RegisterInstance<IPlayerProjection>(playerProjection).SingleInstance();
+            builder.RegisterInstance<ICommandBus>(commandBus).SingleInstance();
+
+            //set up container and resolvers
+            var container = builder.Build();
+            DependencyResolver.SetResolver(new Autofac.Integration.Mvc.AutofacDependencyResolver(container));
+            GlobalHost.DependencyResolver = new SignalR.Autofac.AutofacDependencyResolver(container);
+            RouteTable.Routes.MapHubs();
+
+
+            //mvc registrations
+            AreaRegistration.RegisterAllAreas();
+
+            WebApiConfig.Register(GlobalConfiguration.Configuration);
+            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
     }
 }
