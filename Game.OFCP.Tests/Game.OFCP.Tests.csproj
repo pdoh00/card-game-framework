@@ -66,6 +66,10 @@
       <Project>{01ba89c5-fa13-49c9-a095-fbd2c9d72fdc}</Project>
       <Name>Game.OFCP</Name>
     </ProjectReference>
+    <ProjectReference Include="..\XPokerEval.CactusKev.CSharp\XPokerEval.CactusKev.CSharp.csproj">
+      <Project>{424b1b34-0a7b-4f82-82ff-8c28807f6189}</Project>
+      <Name>XPokerEval.CactusKev.CSharp</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

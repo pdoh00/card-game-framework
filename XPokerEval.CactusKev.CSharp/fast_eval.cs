@@ -221,7 +221,31 @@ namespace PokerCalculator
             return hash_values[find_fast((uint)((c1 & 0xff) * (c2 & 0xff) * (c3 & 0xff) * (c4 & 0xff) * (c5 & 0xff)))];
         }
 
+        public static ushort eval_3cards_fast(int[] hand)
+        {
+            int c1, c2, c3;
 
+            c1 = hand[0];
+            c2 = hand[1];
+            c3 = hand[2];
+
+            return (eval_3cards_fast(c1, c2, c3));
+        }
+
+        public static ushort eval_3cards_fast(int c1, int c2, int c3)
+        {
+            uint q = (uint)(c1 | c2 | c3) >> 16;
+            ushort s;
+
+            s = unique5[q];// check for straights and high card hands
+            if ((s != 0)) return s;
+            //return hash_values[find_fast((uint)((c1 & 0xff) * (c2 & 0xff) * (c3 & 0xff)))];
+
+            var x = (c1 & 0xFF) * (c2 & 0xFF) * (c3 & 0xFF);
+            var y = findit(x);
+
+            return (values[y]);
+        }
 
 
         private static readonly ushort[] hash_adjust = new ushort[]
