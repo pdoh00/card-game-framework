@@ -61,7 +61,7 @@ namespace Game.OFCP.TableCommandHandlers
             {
                 case OFCP_Game.OFCP_GAME_TYPE:
                     {
-                        var table = new Table(Guid.NewGuid().ToString(), MAX_PLAYERS_FOR_OFCP, OFCP_Game.OFCP_GAME_TYPE);
+                        var table = new Table(Guid.NewGuid().ToString().Replace("-", String.Empty), MAX_PLAYERS_FOR_OFCP, OFCP_Game.OFCP_GAME_TYPE);
                         TableRepository.Save(table, -1);
                         break;
                     }

@@ -44,7 +44,6 @@ namespace OFCP.Server
 
             //var customResolver = new SignalR.Autofac.AutofacDependencyResolver(container);
             GlobalHost.DependencyResolver = new SignalR.Autofac.AutofacDependencyResolver(container);
-            //DependencyResolver.SetResolver(new SignalR.Autofac.AutofacDependencyResolver(container));
             RouteTable.Routes.MapHubs(new SignalR.Autofac.AutofacDependencyResolver(container));
 
             //mvc registrations
@@ -114,37 +113,6 @@ namespace OFCP.Server
                 .As<IRepository<OFCP_Game>>();
 
             builder.Register<IHubContext>(c => GlobalHost.ConnectionManager.GetHubContext<PokerServer>());
-
-            //MemoryTableProjection tableProjection = new MemoryTableProjection();
-            //MemoryPlayerProjection playerProjection = new MemoryPlayerProjection();
-            //MemoryEventBus eventBus = new MemoryEventBus();
-            //MemoryCommandBus commandBus = new MemoryCommandBus();
-            //MemoryEventStore eventStore = new MemoryEventStore(eventBus);
-
-            //Repository<Table> tableRepository = new Repository<Table>(eventStore);
-            //Repository<OFCP_Game> gameRepository = new Repository<OFCP_Game>(eventStore);
-            //TableCommandHandler tableCommandHandler = new TableCommandHandler(tableRepository);
-            //GameCommandHandler gameCommandHandler = new GameCommandHandler(tableProjection, playerProjection, gameRepository);
-
-            //var hubCtx = GlobalHost.ConnectionManager.GetHubContext<PokerServer>();
-            //ClientChannel channel = new ClientChannel(hubCtx);
-            //GameEventHandler gameEventHandler = new GameEventHandler(channel); //needs IClientChannel
-            //TableEventHandler tableEventHandler = new TableEventHandler(channel, tableProjection, commandBus, playerProjection);
-
-            //end bootstrap
-
-            //register instance
-
-            //set up container and resolvers
-            
-
-            
-            //commandBus.Register(container.Resolve<ICommandHandler<CreateNewTableCommand>>());
-            //commandBus.Register(gameCommandHandler);
-
-            //var eventBus = container.Resolve<IEventBus>();
-            //eventBus.Register(gameEventHandler);
-            //eventBus.Register(tableEventHandler);
 
             var container = builder.Build();
             return container;
