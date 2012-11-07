@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Game.OFCP.TableCommands;
 using Game.OFCP.TableCommandHandlers;
 using Game.OFCP.GameCommandHandlers;
+using System.Threading;
 
 namespace OFCP.Server.Hubs
 {
@@ -18,6 +19,11 @@ namespace OFCP.Server.Hubs
         private readonly ICommandBus _cmdBus;
         private readonly ITableProjection _tables;
         static Dictionary<string, string> _playerIdMap = new Dictionary<string, string>();
+
+        public PokerServer()
+        {
+            Console.WriteLine("Im in");
+        }
 
         public PokerServer(ICommandBus cmdBus, ITableProjection tableProjection)
         {
@@ -117,10 +123,11 @@ namespace OFCP.Server.Hubs
         //will have the table id from a table selection in the lobby.
         public void GetTableId()
         {
-            //may throw if the table isn't created, but it should be since
-            //it's created on server startup.
-            var table = _tables.ListTables()[0];
-            Clients[Context.ConnectionId].setTableId(table.TableId);
+            while (_tables.ListTables().Count == 0)
+            {
+                Thread.Sleep(200);
+            }
+            Clients[Context.ConnectionId].setTableId(_tables.ListTables()[0].TableId);
         }
 
         public void TakeSeat(string tableId, string playerName)

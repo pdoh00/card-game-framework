@@ -19,14 +19,15 @@ namespace Game.OFCP.EventHandlers
         private readonly IClientChannel _clientChannel;
         private readonly ITableProjection _tableProjection;
         private readonly IPlayerProjection _playerStore;
-        private readonly ICommandBus _commandBus;
-        public TableEventHandler(IClientChannel clientChannel, ITableProjection tableProjection, ICommandBus commandBus, IPlayerProjection playerStore)
+        
+        public TableEventHandler(IClientChannel clientChannel, ITableProjection tableProjection, IPlayerProjection playerStore)
         {
             _clientChannel = clientChannel;
             _tableProjection = tableProjection;
-            _commandBus = commandBus;
             _playerStore = playerStore;
         }
+
+        public ICommandBus CommandBus { get; set; }
 
         public void Handle(PlayerSeatedEvent @event)
         {
@@ -48,7 +49,7 @@ namespace Game.OFCP.EventHandlers
         {
             //send a start game command with the table id.
             var table = _tableProjection.ListTables().Single(t => t.TableId == @event.TableId);
-            _commandBus.Send(new StartNewGameCommand(table.TableId, table.GameType));
+            CommandBus.Send(new StartNewGameCommand(table.TableId, table.GameType));
 
             Console.WriteLine(@event);
         }

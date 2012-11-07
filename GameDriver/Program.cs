@@ -88,7 +88,9 @@ namespace GameDriver
             cmdBus.Register(new TableCommandHandler(tableRepos));
             cmdBus.Register(new GameCommandHandler(tables, players, new Repository<OFCP_Game>(evtStore)));
             evtBus.Register(new GameEventHandler(clientChannel));
-            evtBus.Register(new TableEventHandler(clientChannel, tables, cmdBus, players));
+            var tblEvtHandler = new TableEventHandler(clientChannel, tables, players);
+            tblEvtHandler.CommandBus = cmdBus;
+            evtBus.Register(tblEvtHandler);
             
             //var table = new OFCPTable(Guid.NewGuid().ToString());
             //var newGame = GameFactory.CreateGame(table.Id, GameType.ChinesePoker, shuffler);
