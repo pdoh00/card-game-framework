@@ -102,7 +102,7 @@ namespace OFCP.Server
                 .AsImplementedInterfaces()
                 .SingleInstance();
 
-            builder.RegisterType<ClientChannel>()
+            builder.RegisterType<SignalRClientChannel>()
                 .As<IClientChannel>()
                 .SingleInstance();
 
@@ -112,7 +112,12 @@ namespace OFCP.Server
             builder.RegisterType<Repository<OFCP_Game>>()
                 .As<IRepository<OFCP_Game>>();
 
-            builder.Register<IHubContext>(c => GlobalHost.ConnectionManager.GetHubContext<PokerServer>());
+            builder.RegisterType<SignalRPlayerConnectionMap>()
+                .As<IPlayerConnectionMap>()
+                .SingleInstance();
+
+            var hubContext = GlobalHost.ConnectionManager.GetHubContext<PokerServer>();
+            builder.Register<IHubContext>(c => hubContext);
 
             var container = builder.Build();
             return container;

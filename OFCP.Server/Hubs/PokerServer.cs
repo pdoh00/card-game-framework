@@ -18,17 +18,14 @@ namespace OFCP.Server.Hubs
     {
         private readonly ICommandBus _cmdBus;
         private readonly ITableProjection _tables;
-        static Dictionary<string, string> _playerIdMap = new Dictionary<string, string>();
+        private readonly IPlayerConnectionMap _playerConnectionMap;
 
-        public PokerServer()
-        {
-            Console.WriteLine("Im in");
-        }
 
-        public PokerServer(ICommandBus cmdBus, ITableProjection tableProjection)
+        public PokerServer(ICommandBus cmdBus, ITableProjection tableProjection, IPlayerConnectionMap playerConnectionMap)
         {
             _cmdBus = cmdBus;
             _tables = tableProjection;
+            _playerConnectionMap = playerConnectionMap;
         }
 
         //***********************************************************************
@@ -134,29 +131,20 @@ namespace OFCP.Server.Hubs
         {
             var playerId = Guid.NewGuid().ToString();
             _cmdBus.Send(new SeatPlayerCommand(tableId, playerId, playerName));
-            _playerIdMap[playerId] = Context.ConnectionId;
+            _playerConnectionMap.UpdateConnectionIdForPlayer(playerId, Context.ConnectionId);
             //register player with group the group is the table id
             Groups.Add(Context.ConnectionId, tableId);
         }
 
         public void Reconnect(string playerId)
         {
-            var connectionId = string.Empty;
-            if (_playerIdMap.TryGetValue(playerId, out connectionId))
-            {
-                _playerIdMap[playerId] = Context.ConnectionId;
-            }
-            else
-            {
-                throw new InvalidOperationException("Unable to reconnect.  Player doesn't exist");
-            }
+            _playerConnectionMap.UpdateConnectionIdForPlayer(playerId, Context.ConnectionId);
         }
 
         public void LeaveGame(string tableId, string playerId)
         {
             _cmdBus.Send(new RemovePlayerCommand(tableId, playerId));
-            if (_playerIdMap.ContainsKey(playerId))
-                _playerIdMap.Remove(playerId);
+            _playerConnectionMap.RemovePlayer(playerId);
             
             Groups.Remove(Context.ConnectionId, tableId);
         }
