@@ -163,7 +163,8 @@ namespace OFCP.Server.Hubs
 
         public void GetPlayerPositionsAtTable(string tableId)
         {
-            Clients[tableId].setPlayerState(_tables.GetPlayerPositions(tableId).Select(x => x.PlayerName));
+            var players = _tables.GetPlayerPositions(tableId).Select(x => x.PlayerName);
+            Clients[tableId].setPlayerState(players);
         }
 
         public void SetHand(string tableId, string playerId, string[] cards)

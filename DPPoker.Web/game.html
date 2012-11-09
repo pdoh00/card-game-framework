@@ -79,6 +79,12 @@
                 $('.avatar-contents .position:contains("' + position + '")').parent().children('.picture').attr('src', 'content/images/default-avatar-image.png');
                 $('.avatar-contents .position:contains("' + position + '")').parent().children('.picture').show();
             };
+            pokerServer.setTableId = function (id) {
+                tableId = id;
+
+                //request player positions
+                pokerServer.getPlayerPositionsAtTable(tableId);
+            }
             pokerServer.setPlayerState = function (players) {
                 
                 //set remaining positions
@@ -198,10 +204,7 @@
             $.connection.hub.start({ jsonp: true }, function () {
                 clientMessage('Connection started!', 'info');
 
-                tableId = pokerServer.getTableId();
-
-                //request player positions
-                pokerServer.getPlayerPositionsAtTable(tableId);
+                pokerServer.getTableId();
             });
 
             //take seat handler
