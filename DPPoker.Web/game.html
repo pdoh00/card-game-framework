@@ -118,6 +118,13 @@
             pokerServer.playerSetCards = function (position) {
                 //show that this player has set their cards
             };
+            pokerServer.setTableId = function (id) {
+
+                tableId = id;
+
+                //request player positions
+                pokerServer.getPlayerPositionsAtTable(tableId);
+            }
             pokerServer.playerRegistered = function (playerId, position) {
                 //store player id
                 sessionStorage.setItem('playerId', playerId);
@@ -198,10 +205,7 @@
             $.connection.hub.start({ jsonp: true }, function () {
                 clientMessage('Connection started!', 'info');
 
-                tableId = pokerServer.getTableId();
-
-                //request player positions
-                pokerServer.getPlayerPositionsAtTable(tableId);
+                pokerServer.getTableId();
             });
 
             //take seat handler
