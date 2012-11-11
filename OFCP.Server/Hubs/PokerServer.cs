@@ -11,6 +11,7 @@ using Game.OFCP.TableCommands;
 using Game.OFCP.TableCommandHandlers;
 using Game.OFCP.GameCommandHandlers;
 using System.Threading;
+using SignalR;
 
 namespace OFCP.Server.Hubs
 {
@@ -124,7 +125,11 @@ namespace OFCP.Server.Hubs
             {
                 Thread.Sleep(200);
             }
-            Clients[Context.ConnectionId].setTableId(_tables.ListTables()[0].TableId);
+            var tableId = _tables.ListTables()[0].TableId;
+            Clients[Context.ConnectionId].setTableId(tableId);
+
+            //register the tableId as a group
+            Groups.Add(Context.ConnectionId, tableId);
         }
 
         public void TakeSeat(string tableId, string playerName)
@@ -132,8 +137,6 @@ namespace OFCP.Server.Hubs
             var playerId = Guid.NewGuid().ToString();
             _cmdBus.Send(new SeatPlayerCommand(tableId, playerId, playerName));
             _playerConnectionMap.UpdateConnectionIdForPlayer(playerId, Context.ConnectionId);
-            //register player with group the group is the table id
-            Groups.Add(Context.ConnectionId, tableId);
         }
 
         public void Reconnect(string playerId)
@@ -151,7 +154,8 @@ namespace OFCP.Server.Hubs
 
         public void GetPlayerPositionsAtTable(string tableId)
         {
-            Clients[tableId].setPlayerState(_tables.GetPlayerPositions(tableId).Select(x => x.PlayerName));
+            var players = _tables.GetPlayerPositions(tableId).Select(x => x.PlayerName);
+            Clients[tableId].setPlayerState(players);
         }
 
         public void SetHand(string tableId, string playerId, string[] cards)

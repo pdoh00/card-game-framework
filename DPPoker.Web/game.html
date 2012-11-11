@@ -81,6 +81,8 @@
             };
             pokerServer.setPlayerState = function (players) {
                 
+                var playersCount = players.length;
+
                 //set remaining positions
                 for (var i = 1; i < players.length + 1; i++) {
 
