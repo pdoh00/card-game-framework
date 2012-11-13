@@ -103,8 +103,7 @@ namespace OFCP.Server
                 .SingleInstance();
 
             builder.RegisterType<SignalRClientChannel>()
-                .As<IClientChannel>()
-                .SingleInstance();
+                .As<IClientChannel>();
 
             builder.RegisterType<Repository<Table>>()
                 .As<IRepository<Table>>();
