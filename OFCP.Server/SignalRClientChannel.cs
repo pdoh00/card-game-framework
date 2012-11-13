@@ -4,28 +4,22 @@ using System.Linq;
 using System.Web;
 using Infrastructure;
 using SignalR.Hubs;
-using OFCP.Server.Hubs;
-using SignalR;
 
 namespace OFCP.Server
 {
     internal class SignalRClientChannel : IClientChannel
     {
-        IHubContext HubCtx;
+        private readonly IHubContext HubCtx;
         private readonly IPlayerConnectionMap _playerConnectionMap;
 
         public SignalRClientChannel(IHubContext hubCtx, IPlayerConnectionMap playerConnectionMap)
         {
             HubCtx = hubCtx;
             _playerConnectionMap = playerConnectionMap;
-            
         }
         public void BroadcastPlayerSeated(string tableId, string name, int position)
         {
-            var testCtx = GlobalHost.ConnectionManager.GetHubContext<PokerServer>();
-            testCtx.Clients.broadcastToConsole("NOT GLOBAL");
-            HubCtx.Clients.broadcastToConsole("GLOBAL");
-            HubCtx.Clients.playerTookSeat(name, position, "");
+            HubCtx.Clients[tableId].playerTookSeat(name, position, "");
         }
 
         public void BroadcastPlayerLeft(string tableId, string name, int position)
@@ -72,7 +66,7 @@ namespace OFCP.Server
         public void PlayerSeated(string playerId, int position)
         {
             var connectionId = _playerConnectionMap.GetConnectionIdForPlayer(playerId);
-            HubCtx.Clients.playerRegistered(playerId, position);
+            HubCtx.Clients[connectionId].playerRegistered(playerId, position);
         }
     }
 }
