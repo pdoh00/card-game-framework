@@ -135,8 +135,9 @@ namespace OFCP.Server.Hubs
         public void TakeSeat(string tableId, string playerName)
         {
             var playerId = Guid.NewGuid().ToString();
-            _cmdBus.Send(new SeatPlayerCommand(tableId, playerId, playerName));
             _playerConnectionMap.UpdateConnectionIdForPlayer(playerId, Context.ConnectionId);
+            _cmdBus.Send(new SeatPlayerCommand(tableId, playerId, playerName));
+            
         }
 
         public void Reconnect(string playerId)
@@ -146,8 +147,9 @@ namespace OFCP.Server.Hubs
 
         public void LeaveGame(string tableId, string playerId)
         {
-            _cmdBus.Send(new RemovePlayerCommand(tableId, playerId));
             _playerConnectionMap.RemovePlayer(playerId);
+            _cmdBus.Send(new RemovePlayerCommand(tableId, playerId));
+            
             
             Groups.Remove(Context.ConnectionId, tableId);
         }

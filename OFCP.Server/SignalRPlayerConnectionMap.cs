@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -7,7 +8,7 @@ namespace OFCP.Server
 {
     public class SignalRPlayerConnectionMap : IPlayerConnectionMap
     {
-        private readonly Dictionary<string, string> _playerIdMap = new Dictionary<string, string>();
+        private readonly ConcurrentDictionary<string, string> _playerIdMap = new ConcurrentDictionary<string, string>();
 
         public string GetConnectionIdForPlayer(string playerId)
         {
@@ -21,7 +22,8 @@ namespace OFCP.Server
 
         public void RemovePlayer(string playerId)
         {
-            _playerIdMap.Remove(playerId);
+            string removedPlayerId;
+            _playerIdMap.TryRemove(playerId, out removedPlayerId);
         }
     }
 }

@@ -96,6 +96,7 @@ namespace OFCP.Server
 
             builder.RegisterType<TableEventHandler>()
                 .AsImplementedInterfaces()
+                .PropertiesAutowired(PropertyWiringFlags.AllowCircularDependencies)
                 .SingleInstance();
 
             builder.RegisterType<GameEventHandler>()
