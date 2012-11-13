@@ -31,9 +31,8 @@ namespace Game.OFCP.EventHandlers
 
         public void Handle(PlayerSeatedEvent @event)
         {
-
-            _clientChannel.BroadcastPlayerSeated(@event.TableId, @event.PlayerName, @event.Position);
             _clientChannel.PlayerSeated(@event.PlayerId, @event.Position);
+            _clientChannel.BroadcastPlayerSeated(@event.TableId, @event.PlayerName, @event.Position);
             _tableProjection.AddPlayer(@event.TableId, @event.Position, @event.PlayerName, @event.PlayerId);
             _playerStore.AddPlayer(@event.PlayerId, @event.PlayerName);
         }
@@ -62,7 +61,7 @@ namespace Game.OFCP.EventHandlers
 
         public void Handle(PlayerReadyEvent @event)
         {
-            Console.WriteLine(@event);
+            _clientChannel.BroadcastPlayerReady(@event.TableId, @event.Position);
         }
     }
 }

@@ -70,51 +70,81 @@
                 });
             };
             pokerServer.playerTookSeat = function (name, position, avatar) {
-                //update the seat and show the player info
-                //show that the player is ready
-                $('.avatar-contents .position:contains("' + position + '")').parent().children('.name-container').children('.name').text(name);
-                $('.avatar-contents .position:contains("' + position + '")').parent().children('.name-container').children('.points').text('(' + 0 + ')');
-                $('.avatar-contents .position:contains("' + position + '")').parent().children('.name-container').children('.points').show();
-                $('.avatar-contents .position:contains("' + position + '")').parent().children('.name-container').removeClass('empty-avatar');
-                $('.avatar-contents .position:contains("' + position + '")').parent().children('.picture').attr('src', 'content/images/default-avatar-image.png');
-                $('.avatar-contents .position:contains("' + position + '")').parent().children('.picture').show();
+                if (name !== sessionStorage.playerName) {
+                    //update the seat and show the player info
+                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.name').text(name);
+                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
+                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.points').show();
+                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').removeClass('empty-avatar');
+                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.picture').attr('src', 'content/images/default-avatar-image.png');
+                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.picture').show();
+                }
             };
             pokerServer.setPlayerState = function (players) {
                 
                 var playersCount = players.length;
 
-                //set remaining positions
-                for (var i = 1; i < players.length + 1; i++) {
 
-                    var spot = '';
-                    switch (i) {
-                        case 1:
-                            $('.left .position').text('Position ' + i);
-                            spot = 'left';
-                            break;
-                        case 2:
-                            $('.top .position').text('Position ' + i);
-                            spot = 'top';
-                            break;
-                        case 3:
-                            $('.right .position').text('Position ' + i);
-                            spot = 'right';
-                            break;
-                        case 4:
-                            $('.bottom .position').text('Position ' + i);
-                            $('.take-seat').hide();
-                            $('.leave-game').hide();
-                            spot = 'bottom';
-                            break;
-                        default:
+                var playerId = sessionStorage.playerId;
+                var playerPosition = sessionStorage.playerPosition;
+                if (playerId) {
+
+                    for (var i = 1; i < 5; i++) {
+                        if (i != playerPosition) {
+                            $('.avatar-contents .position[data-position="' + i + '"]').parent().children('.name-container').children('.name').text('Empty');
+                            $('.avatar-contents .position[data-position="' + i + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
+                            $('.avatar-contents .position[data-position="' + i + '"]').parent().children('.name-container').children('.points').hide();
+                            $('.avatar-contents .position[data-position="' + i + '"]').parent().children('.picture').hide();
+                            $('.avatar-contents .position[data-position="' + i + '"]').parent().children('.name-container').addClass('empty-avatar');
+                        }
                     }
 
-                    $('.' + spot + ' .name-container .name').text(players[i - 1]);
-                    $('.' + spot + ' .name-container .points').text('(' + 0 + ')');
-                    $('.' + spot + ' .name-container .points').show();
-                    $('.' + spot + ' .name-container').removeClass('empty-avatar');
-                    $('.' + spot + ' .picture').attr('src', 'content/images/default-avatar-image.png');
-                    $('.' + spot + ' .picture').show();
+                    $(players).each(function (index, item) {
+                        //update the seat and show the player info
+                        $('.avatar-contents .position[data-position="' + (index + 1) + '"]').parent().children('.name-container').children('.name').text(players[index]);
+                        $('.avatar-contents .position[data-position="' + (index + 1) + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
+                        $('.avatar-contents .position[data-position="' + (index + 1) + '"]').parent().children('.name-container').children('.points').show();
+                        $('.avatar-contents .position[data-position="' + (index + 1) + '"]').parent().children('.name-container').removeClass('empty-avatar');
+                        $('.avatar-contents .position[data-position="' + (index + 1) + '"]').parent().children('.picture').attr('src', 'content/images/default-avatar-image.png');
+                        $('.avatar-contents .position[data-position="' + (index + 1) + '"]').parent().children('.picture').show();
+                    });
+                } else {
+                    //set remaining positions
+                    for (var i = 1; i < players.length + 1; i++) {
+
+                        var spot = '';
+                        switch (i) {
+                            case 1:
+                                $('.left .position').text('Position ' + i);
+                                $('.left .position').attr('data-position', i);
+                                spot = 'left';
+                                break;
+                            case 2:
+                                $('.top .position').text('Position ' + i);
+                                $('.top .position').attr('data-position', i);
+                                spot = 'top';
+                                break;
+                            case 3:
+                                $('.right .position').text('Position ' + i);
+                                $('.right .position').attr('data-position', i);
+                                spot = 'right';
+                                break;
+                            case 4:
+                                $('.bottom .position').text('Position ' + i);
+                                $('.bottom .position').attr('data-position', i);
+                                $('.leave-game').hide();
+                                spot = 'bottom';
+                                break;
+                            default:
+                        }
+
+                        $('.' + spot + ' .name-container .name').text(players[i - 1]);
+                        $('.' + spot + ' .name-container .points').text('(' + 0 + ')');
+                        $('.' + spot + ' .name-container .points').show();
+                        $('.' + spot + ' .name-container').removeClass('empty-avatar');
+                        $('.' + spot + ' .picture').attr('src', 'content/images/default-avatar-image.png');
+                        $('.' + spot + ' .picture').show();
+                    }
                 }
             }
             pokerServer.playerSetCards = function (position) {
@@ -130,45 +160,14 @@
             pokerServer.playerRegistered = function (playerId, position) {
                 //store player id
                 sessionStorage.setItem('playerId', playerId);
+                sessionStorage.setItem('playerPosition', position);
                 
-                //hide take seat button
-                $('.take-seat').hide();
-
-                //show leave table button
-                $('.leave-game').show();
-
-                //update user box
+                //update ui
                 var playerName = sessionStorage.getItem('playerName');
-                $('.bottom .name-container .name').text(playerName);
-                $('.bottom .name-container .points').text('(' + 0 + ')');
-                $('.bottom .name-container .points').show();
-                $('.bottom .name-container').removeClass('empty-avatar');
-                $('.bottom .position').text('Position ' + position);
-                $('.bottom .picture').attr('src', 'content/images/default-avatar-image.png');
-                $('.bottom .picture').show();
+                updatePlayerPosition(playerName, position);
 
-                //set remaining positions
-                for (var i = 1; i < 4; i++) {
-
-                    var pos = position + i;
-
-                    if (pos > 4) {
-                        pos = (position + i) - 4;
-                    }
-
-                    switch (i) {
-                        case 1:
-                            $('.left .position').text('Position ' + pos);
-                            break;
-                        case 2:
-                            $('.top .position').text('Position ' + pos);
-                            break;
-                        case 3:
-                            $('.right .position').text('Position ' + pos);
-                            break;
-                        default:
-                    }
-                }
+                //update remaining positions
+                pokerServer.getPlayerPositionsAtTable(tableId);
             };
             pokerServer.dealCards = function (cards) {
                 //display my cards
@@ -188,9 +187,8 @@
                 });
             };
             pokerServer.playerReadiedUp = function (position) {
-                alert(position + ' readied up');
                 //show that the player is ready
-                $('.avatar-contents .position:contains("' + position + '")').parent().addClass('player-ready', 500);
+                $('.avatar-contents .position[data-position="' + position + '"]').parent().addClass('player-ready', 500);
             };
             pokerServer.playerCardsRearranged = function (position, cards) {
                 //update the cards at that position
@@ -221,15 +219,29 @@
                 }
             });
 
+            //ready-up handler
+            $('.ready-up').click(function () {
+                pokerServer.playerReady(tableId, sessionStorage.playerId);
+
+                //show that the player is ready
+                $('.avatar-contents .position[data-position="' + sessionStorage.playerPosition + '"]').parent().addClass('player-ready', 500);
+
+                //hide ready up button
+                $('.ready-up').hide();
+            });
+
             //leave table handler
             $('.leave-game').click(function () {
-                pokerServer.leaveGame();
+                pokerServer.leaveGame(tableId, sessionStorage.playerId);
 
                 //show take seat button
                 $('.take-seat').show();
 
                 //hide leave table button
                 $('.leave-game').hide();
+
+                //hide ready up button
+                $('.ready-up').hide();
 
                 //update user box
                 $('.bottom .name-container .name').text('Empty');
@@ -300,10 +312,59 @@
                     console.log(clientMessage);
             }
         }
+
+        function updatePlayerPosition(playerName, position) {
+            //hide take seat button
+            $('.take-seat').hide();
+
+            //show leave table button
+            $('.leave-game').show();
+
+            //show ready up button
+            $('.ready-up').show();
+
+            //update user box
+            $('.bottom .name-container .name').text(playerName);
+            $('.bottom .name-container .points').text('(' + 0 + ')');
+            $('.bottom .name-container .points').show();
+            $('.bottom .name-container').removeClass('empty-avatar');
+            $('.bottom .position').text('Position ' + position);
+            $('.bottom .position').attr('data-position', position);
+            $('.bottom .picture').attr('src', 'content/images/default-avatar-image.png');
+            $('.bottom .picture').show();
+
+            //set remaining positions
+            for (var i = 1; i < 4; i++) {
+
+                var pos = position + i;
+
+                if (pos > 4) {
+                    pos = (position + i) - 4;
+                }
+
+                switch (i) {
+                    case 1:
+                        $('.left .position').text('Position ' + pos);
+                        $('.left .position').attr('data-position', pos);
+                        break;
+                    case 2:
+                        $('.top .position').text('Position ' + pos);
+                        $('.top .position').attr('data-position', pos);
+                        break;
+                    case 3:
+                        $('.right .position').text('Position ' + pos);
+                        $('.right .position').attr('data-position', pos);
+                        break;
+                    default:
+                }
+            }
+        }
+
     </script>
 </head>
 <body>
     <input class="deal-cards" type="button" value="Deal Cards" />
+    <input class="take-seat" type="button" value="Sit Down" />
 
     <div class="table">
 
@@ -315,7 +376,7 @@
                     <span class="name">Empty</span>
                     <div class="points" style="display: none;">(0)</div>
                 </div>
-                <div class="position"></div>
+                <div class="position" data-position="2">Position 2</div>
             </div>
         </div>
         <div class="bottom">
@@ -325,10 +386,10 @@
                     <span class="name">Empty</span>
                     <div class="points" style="display: none;">(0)</div>
                 </div>
-                <div class="position"></div>
+                <div class="position" data-position="4">Position 4</div>
             </div>
-            <input class="take-seat" type="button" value="Sit Down" />
             <input class="leave-game" type="button" value="Leave Game" style="display: none;" />
+            <input class="ready-up" type="button" value="Ready" style="display: none;" />
         </div>
         <div class="left">
             <div class="avatar-contents">
@@ -337,7 +398,7 @@
                     <span class="name">Empty</span>
                     <div class="points" style="display: none;">(0)</div>
                 </div>
-                <div class="position"></div>
+                <div class="position" data-position="1">Position 1</div>
             </div>
         </div>
         <div class="right">
@@ -347,7 +408,7 @@
                     <span class="name">Empty</span>
                     <div class="points" style="display: none;">(0)</div>
                 </div>
-                <div class="position"></div>
+                <div class="position" data-position="3">Position 3</div>
             </div>
         </div>
 
