@@ -10,17 +10,20 @@ namespace Game.OFCP.Events
     {
         public readonly string PlayerId;
         public readonly string GameId;
+        public readonly string TableId;
         public readonly DateTime JoinTime;
         public readonly string PlayerName;
         public readonly int Position;
 
         public PlayerJoinedGame(string playerId, 
+            string tableId,
             string gameId, 
             DateTime joinTime, 
             string playerName,
             int position)
         {
             PlayerId = playerId;
+            TableId = tableId;
             GameId = gameId;
             JoinTime = joinTime;
             PlayerName = playerName;
@@ -29,12 +32,13 @@ namespace Game.OFCP.Events
 
         public override string ToString()
         {
-            return base.ToString() + String.Format("Player {0}-{1} joined game {2} position {3} @ {4}",
+            return base.ToString() + String.Format("Player {0}-{1} joined game {2} position {3} @ {4} on Table {5}",
                 PlayerName,
                 PlayerId,
                 GameId,
                 Position,
-                JoinTime);
+                JoinTime,
+                TableId);
         }
     }
 }

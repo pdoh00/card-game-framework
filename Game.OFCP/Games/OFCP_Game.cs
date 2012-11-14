@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Game.OFCP.Events;
+using Game.OFCP.GameEvents;
 using Infrastructure;
 
 namespace Game.OFCP.Games
@@ -11,6 +12,10 @@ namespace Game.OFCP.Games
     public sealed class OFCP_Game : Game<OFCP_Game, OFCP_Player>
     {
         public const string OFCP_GAME_TYPE = "Open Faced Chinese Poker";
+        public const int OFCP_HAND_SIZE = 13;
+        private const int BOTTOM_HAND_SIZE = 5;
+        private const int MIDDLE_HAND_SIZE = 5;
+        private const int TOP_HAND_SIZE = 3;
 
         private const int MAX_PLAYERS = 4;
         private readonly StandardDeck _deck;
@@ -22,7 +27,10 @@ namespace Game.OFCP.Games
         public OFCP_Game()
         {
             // used to create in repository
+            this.Handles<PlayerHandCommitedEvent>(OnPlayerHandCommited);
         }
+
+        
         public OFCP_Game(string tableId, string gameId, IShuffler shuffler)
             : base(tableId, gameId, OFCP_GAME_TYPE)
         {
@@ -37,8 +45,7 @@ namespace Game.OFCP.Games
             if(_isGameInProgress)
                 throw new InvalidOperationException("Cannot start a game already in progress");
 
-            
-            Apply(new GameStartedEvent(Id, DateTime.Now.ToUniversalTime()));
+            Apply(new GameStartedEvent(Id, TableId, DateTime.Now.ToUniversalTime()));
         }
 
         public void StartNextRound()
@@ -63,7 +70,7 @@ namespace Game.OFCP.Games
             if (player != null)
                 throw new InvalidOperationException(String.Format("Player {0} already is seated at this game", player.Id));
 
-            Apply(new PlayerJoinedGame(playerId, Id, DateTime.Now.ToUniversalTime(), playerName, position));
+            Apply(new PlayerJoinedGame(playerId, TableId, Id, DateTime.Now.ToUniversalTime(), playerName, position));
         }
 
         public void RemovePlayer(string playerId)
@@ -81,19 +88,22 @@ namespace Game.OFCP.Games
             if (player == null)
                 throw new InvalidOperationException("Player {0} is not part of game and cannot be removed.");
 
+            if (h.Length != 13)
+                throw new ArgumentException("The hand passed in is not the correct size.  A proper hand consists of exactly 13 cards");
+
             //if all players set
-            var btmHand = new string[5];
-            Array.Copy(h, 0, btmHand, 0, 5);
+            var btmHand = new string[BOTTOM_HAND_SIZE];
+            Array.Copy(h, 0, btmHand, 0, BOTTOM_HAND_SIZE);
 
-            var middleHand = new string[5];
-            Array.Copy(h, 5, middleHand, 0, 5);
+            var middleHand = new string[MIDDLE_HAND_SIZE];
+            Array.Copy(h, 5, middleHand, 0, MIDDLE_HAND_SIZE);
 
-            var topHand = new string[3];
-            Array.Copy(h, 10, topHand, 0, 3);
+            var topHand = new string[TOP_HAND_SIZE];
+            Array.Copy(h, 10, topHand, 0, TOP_HAND_SIZE);
 
-            player.SetBottomHand(btmHand);
-            player.SetMiddleHand(middleHand);
-            player.SetTopHand(topHand);
+            Apply(new PlayerHandCommitedEvent(TableId, Id, playerId, btmHand, middleHand, topHand));
+
+            
 
             //calc score
 
@@ -124,6 +134,14 @@ namespace Game.OFCP.Games
                 player.AcceptCards(cards, _round);
                 Apply(new PlayerDealtCards(player.Id, Id, _round, cards));
             }
+        }
+
+        private void OnPlayerHandCommited(PlayerHandCommitedEvent @event)
+        {
+            var player = FindPlayerById(@event.PlayerId);
+            player.SetBottomHand(@event.BottomHand);
+            player.SetMiddleHand(@event.MiddleHand);
+            player.SetTopHand(@event.TopHand);
         }
 
         private OFCP_Player FindPlayerById(string playerId)

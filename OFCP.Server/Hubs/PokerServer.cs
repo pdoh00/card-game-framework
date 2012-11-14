@@ -12,6 +12,7 @@ using Game.OFCP.TableCommandHandlers;
 using Game.OFCP.GameCommandHandlers;
 using System.Threading;
 using SignalR;
+using Game.OFCP.GameCommands;
 
 namespace OFCP.Server.Hubs
 {
@@ -149,8 +150,6 @@ namespace OFCP.Server.Hubs
         {
             _playerConnectionMap.RemovePlayer(playerId);
             _cmdBus.Send(new RemovePlayerCommand(tableId, playerId));
-            
-            
             Groups.Remove(Context.ConnectionId, tableId);
         }
 
@@ -160,9 +159,32 @@ namespace OFCP.Server.Hubs
             Clients[tableId].setPlayerState(players);
         }
 
-        public void SetHand(string tableId, string playerId, string[] cards)
+        /// <summary>
+        /// Sets all of the players hands for the current game.
+        /// </summary>
+        /// <param name="tableId"></param>
+        /// <param name="gameId"></param>
+        /// <param name="playerId"></param>
+        /// <param name="cards">Array of size 13 with the following format
+        /// 
+        /// bbbbbbmmmmmttt
+        /// b:bottom hand card
+        /// m:middle hand card
+        /// t:top hand card
+        /// 
+        /// </param>
+        public void SetHand(string tableId, string gameId, string playerId, string[] cards)
         {
-            //when a client wants to set his hand he calls this method
+            var btmHand = new string[5];
+            Array.Copy(cards, 0, btmHand, 0, 5);
+
+            var middleHand = new string[5];
+            Array.Copy(cards, 5, middleHand, 0, 5);
+
+            var topHand = new string[3];
+            Array.Copy(cards, 10, topHand, 0, 3);
+
+            _cmdBus.Send(new CommitPlayerHandsCommand(tableId, gameId, playerId, btmHand, middleHand, topHand));
         }
 
         public void PlayerReady(string tableId, string playerId)

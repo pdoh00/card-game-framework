@@ -52,7 +52,9 @@
     <Compile Include="EventHandlers\GameEventHandler.cs" />
     <Compile Include="EventHandlers\TableEventHandler.cs" />
     <Compile Include="GameCommandHandlers\GameCommandHandler.cs" />
+    <Compile Include="GameCommands\CommitPlayerHandsCommand.cs" />
     <Compile Include="GameCommands\StartNewGameCommand.cs" />
+    <Compile Include="GameEvents\PlayerHandCommitedEvent.cs" />
     <Compile Include="MemoryPlayerProjection.cs" />
     <Compile Include="IPlayerReadStore.cs" />
     <Compile Include="TableEvents\AllPlayersReadyEvent.cs" />

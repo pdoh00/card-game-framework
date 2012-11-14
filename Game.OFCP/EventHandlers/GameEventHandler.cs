@@ -33,7 +33,7 @@ namespace Game.OFCP.EventHandlers
 
         public void Handle(GameStartedEvent @event)
         {
-            _clientChannel.BroadcastGameStarted("Need table id here", @event.GameId, @event.GameStartTime);
+            _clientChannel.BroadcastGameStarted(@event.TableId, @event.GameId, @event.GameStartTime);
         }
 
         public void Handle(DeckShuffledEvent @event)

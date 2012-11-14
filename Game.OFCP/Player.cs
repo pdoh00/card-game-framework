@@ -95,14 +95,13 @@ namespace Game.OFCP
             cards.CopyTo(_topHand, 0);
         }
 
-
         private void ThrowIfUsingInvalidCards(string[] cards)
         {
             var intersect = cards.Intersect(Cards.Select(c => c.Text));
             var invalidCards = cards.Except(intersect);
             var hasInvalidCards = invalidCards.Any();
             if (hasInvalidCards)
-                throw new InvalidOperationException("The player is attempting to make a bottom hand of cards that he doesn't have.");
+                throw new InvalidOperationException("The player is attempting to make a hand of cards that they don't have.");
         }
     }
 }
