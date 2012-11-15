@@ -18,7 +18,7 @@ namespace Game.OFCP.Events
         /// </summary>
         public readonly string PlayerId;
         /// <summary>
-        /// The position on the table which the player was seated.
+        /// The position on the table which the player was seated. 0 based.
         /// </summary>
         public readonly int Position;
         /// <summary>
@@ -26,6 +26,13 @@ namespace Game.OFCP.Events
         /// </summary>
         public readonly string PlayerName;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tableId"></param>
+        /// <param name="playerId"></param>
+        /// <param name="position">0 based position</param>
+        /// <param name="playerName"></param>
         public PlayerSeatedEvent(string tableId, string playerId, int position, string playerName)
         {
             TableId = tableId;

@@ -18,6 +18,13 @@ namespace Game.OFCP.Events
 
         public readonly int Position;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tableId"></param>
+        /// <param name="playerId"></param>
+        /// <param name="playerName"></param>
+        /// <param name="position">0 based position</param>
         public PlayerLeftTable(string tableId, string playerId, string playerName, int position)
         {
             TableId = tableId;

@@ -22,9 +22,35 @@ namespace Game.OFCP
                 Name = name;
                 Position = position;
             }
+
+            // override object.Equals
+            public override bool Equals(object obj)
+            {
+                //       
+                // See the full list of guidelines at
+                //   http://go.microsoft.com/fwlink/?LinkID=85237  
+                // and also the guidance for operator== at
+                //   http://go.microsoft.com/fwlink/?LinkId=85238
+                //
+
+                if (obj == null || GetType() != obj.GetType())
+                {
+                    return false;
+                }
+
+
+                return Id == ((PlayerDetails)obj).Id;
+            }
+
+            // override object.GetHashCode
+            public override int GetHashCode()
+            {
+                return Id.GetHashCode();
+            }
         }
 
-        private List<PlayerDetails> _playerSeatMap;
+        //private List<PlayerDetails> _playerSeatMap;
+        private PlayerDetails[] _playerSeatMap;
         private List<PlayerDetails> _playersReady;
         private string _id;
         private string _gameTypeId;
@@ -58,10 +84,9 @@ namespace Game.OFCP
         /// <param name="playerId"></param>
         public void RemovePlayer(string playerId)
         {
-            var player = _playerSeatMap.Find(p => p.Id == playerId);
-            if (player.Id == null)
-                throw new InvalidOperationException("Player {0} is not part of game and cannot be removed.");
-
+            var player = _playerSeatMap.FirstOrDefault(p => p.Id == playerId);
+            if (player.Id == default(PlayerDetails).Id)
+                throw new InvalidOperationException(String.Format("Player {0} is not seated at this table", player.Id));
             Apply(new PlayerLeftTable(Id, player.Id, player.Name, player.Position));
         }
 
@@ -72,20 +97,23 @@ namespace Game.OFCP
         /// <param name="player"></param>
         public void SeatPlayer(string playerId, string playerName)
         {
-            if (_playerSeatMap.Count >= _numberOfSeats)
+            var numSeatsFilled = _playerSeatMap.Where(s => s.Id != default(PlayerDetails).Id).Count();
+            if (numSeatsFilled >= _numberOfSeats)
                 throw new InvalidOperationException("Maximum 4 players");
 
-            if (_playerSeatMap.Find(p => p.Id == playerId).Id != null)
-                throw new InvalidOperationException(String.Format("Player {0} already is seated at this game", playerId));
+            var player = _playerSeatMap.FirstOrDefault(p => p.Id == playerId);
+            if (player.Id != default(PlayerDetails).Id)
+                throw new InvalidOperationException(String.Format("Player {0} is already seated at this table", player.Id));
 
             Apply(new PlayerSeatedEvent(Id, playerId, GetNextAvailableSeat(), playerName));
         }
 
         public void PlayerReady(string playerId)
         {
-            var playerDetails = _playerSeatMap.Find(p => p.Id == playerId);
-
-            Apply(new PlayerReadyEvent(this.Id, playerDetails.Id, playerDetails.Name, playerDetails.Position));
+            var player = _playerSeatMap.FirstOrDefault(p => p.Id == playerId);
+            if (player.Id == default(PlayerDetails).Id)
+                throw new InvalidOperationException(String.Format("Player {0} is not seated at this table", player.Id));
+            Apply(new PlayerReadyEvent(this.Id, player.Id, player.Name, player.Position));
         }
 
         private void OnPlayerReady(PlayerReadyEvent @event)
@@ -104,18 +132,21 @@ namespace Game.OFCP
             _id = @event.TableId;
             _numberOfSeats = @event.PlayerCapacity;
             _gameTypeId = @event.GameType;
-            _playerSeatMap = new List<PlayerDetails>(_numberOfSeats);
+            //_playerSeatMap = new List<PlayerDetails>(_numberOfSeats);
+            _playerSeatMap = new PlayerDetails[_numberOfSeats];
             _playersReady = new List<PlayerDetails>(_numberOfSeats);
         }
 
         private void OnPlayerRemoved(PlayerLeftTable @event)
         {
-            _playerSeatMap.RemoveAll(p => p.Id == @event.PlayerId);
+            //_playerSeatMap.RemoveAll(p => p.Id == @event.PlayerId);
+            _playerSeatMap[@event.Position] = default(PlayerDetails);
         }
 
         private void OnPlayerSeated(PlayerSeatedEvent @event)
         {
-            _playerSeatMap.Add(new PlayerDetails(@event.PlayerId, @event.PlayerName, @event.Position));
+            //_playerSeatMap.Add(new PlayerDetails(@event.PlayerId, @event.PlayerName, @event.Position));
+            _playerSeatMap[@event.Position] = new PlayerDetails(@event.PlayerId, @event.PlayerName, @event.Position);
         }
 
         private void OnAllPlayersReady(AllPlayersReadyEvent obj)
@@ -125,13 +156,17 @@ namespace Game.OFCP
 
         private int GetNextAvailableSeat()
         {
-            return _playerSeatMap.Count + 1;
+            for (int i = 0; i < _playerSeatMap.Length; i++)
+            {
+                if (_playerSeatMap[i].Id == default(PlayerDetails).Id)
+                    return i;
+            }
+            throw new InvalidOperationException("Asking for an available seat even though all are full.");
         }
 
         private bool AllPlayersReady()
         {
             return _playersReady.Count == _numberOfSeats;
         }
-
     }
 }
