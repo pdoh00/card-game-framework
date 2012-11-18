@@ -71,6 +71,7 @@
             };
             pokerServer.playerTookSeat = function (name, position, avatar) {
                 if (name !== sessionStorage.playerName) {
+
                     //update the seat and show the player info
                     $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.name').text(name);
                     $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
@@ -78,6 +79,16 @@
                     $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').removeClass('empty-avatar');
                     $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.picture').attr('src', 'content/images/default-avatar-image.png');
                     $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.picture').show();
+                }
+            };
+            pokerServer.playerLeftSeat = function (name, position) {
+                if (name !== sessionStorage.playerName) {
+                    //remove player
+                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.name').text('Empty');
+                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
+                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.points').hide();
+                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.picture').hide();
+                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').addClass('empty-avatar');
                 }
             };
             pokerServer.setPlayerState = function (players) {
@@ -101,36 +112,36 @@
 
                     $(players).each(function (index, item) {
                         //update the seat and show the player info
-                        $('.avatar-contents .position[data-position="' + (index + 1) + '"]').parent().children('.name-container').children('.name').text(players[index]);
-                        $('.avatar-contents .position[data-position="' + (index + 1) + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
-                        $('.avatar-contents .position[data-position="' + (index + 1) + '"]').parent().children('.name-container').children('.points').show();
-                        $('.avatar-contents .position[data-position="' + (index + 1) + '"]').parent().children('.name-container').removeClass('empty-avatar');
-                        $('.avatar-contents .position[data-position="' + (index + 1) + '"]').parent().children('.picture').attr('src', 'content/images/default-avatar-image.png');
-                        $('.avatar-contents .position[data-position="' + (index + 1) + '"]').parent().children('.picture').show();
+                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').children('.name').text(players[index]);
+                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
+                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').children('.points').show();
+                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').removeClass('empty-avatar');
+                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.picture').attr('src', 'content/images/default-avatar-image.png');
+                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.picture').show();
                     });
                 } else {
                     //set remaining positions
-                    for (var i = 1; i < players.length + 1; i++) {
+                    for (var i = 1; i < players.length; i++) {
 
                         var spot = '';
                         switch (i) {
-                            case 1:
-                                $('.left .position').text('Position ' + i);
+                            case 0:
+                                $('.left .position').text('Position ' + (i + 1));
                                 $('.left .position').attr('data-position', i);
                                 spot = 'left';
                                 break;
-                            case 2:
-                                $('.top .position').text('Position ' + i);
+                            case 1:
+                                $('.top .position').text('Position ' + (i + 1));
                                 $('.top .position').attr('data-position', i);
                                 spot = 'top';
                                 break;
-                            case 3:
-                                $('.right .position').text('Position ' + i);
+                            case 2:
+                                $('.right .position').text('Position ' + (i + 1));
                                 $('.right .position').attr('data-position', i);
                                 spot = 'right';
                                 break;
-                            case 4:
-                                $('.bottom .position').text('Position ' + i);
+                            case 3:
+                                $('.bottom .position').text('Position ' + (i + 1));
                                 $('.bottom .position').attr('data-position', i);
                                 $('.leave-game').hide();
                                 spot = 'bottom';
@@ -138,7 +149,7 @@
                             default:
                         }
 
-                        $('.' + spot + ' .name-container .name').text(players[i - 1]);
+                        $('.' + spot + ' .name-container .name').text(players[i]);
                         $('.' + spot + ' .name-container .points').text('(' + 0 + ')');
                         $('.' + spot + ' .name-container .points').show();
                         $('.' + spot + ' .name-container').removeClass('empty-avatar');
@@ -336,22 +347,22 @@
             //set remaining positions
             for (var i = 1; i < 4; i++) {
 
-                var pos = position + i;
+                var pos = position;
 
-                if (pos > 4) {
-                    pos = (position + i) - 4;
+                if (pos >3) {
+                    pos = position - 3;
                 }
 
                 switch (i) {
-                    case 1:
+                    case 0:
                         $('.left .position').text('Position ' + pos);
                         $('.left .position').attr('data-position', pos);
                         break;
-                    case 2:
+                    case 1:
                         $('.top .position').text('Position ' + pos);
                         $('.top .position').attr('data-position', pos);
                         break;
-                    case 3:
+                    case 2:
                         $('.right .position').text('Position ' + pos);
                         $('.right .position').attr('data-position', pos);
                         break;
@@ -376,7 +387,7 @@
                     <span class="name">Empty</span>
                     <div class="points" style="display: none;">(0)</div>
                 </div>
-                <div class="position" data-position="2">Position 2</div>
+                <div class="position" data-position="1">Position 2</div>
             </div>
         </div>
         <div class="bottom">
@@ -386,7 +397,7 @@
                     <span class="name">Empty</span>
                     <div class="points" style="display: none;">(0)</div>
                 </div>
-                <div class="position" data-position="4">Position 4</div>
+                <div class="position" data-position="3">Position 4</div>
             </div>
             <input class="leave-game" type="button" value="Leave Game" style="display: none;" />
             <input class="ready-up" type="button" value="Ready" style="display: none;" />
@@ -398,7 +409,7 @@
                     <span class="name">Empty</span>
                     <div class="points" style="display: none;">(0)</div>
                 </div>
-                <div class="position" data-position="1">Position 1</div>
+                <div class="position" data-position="0">Position 1</div>
             </div>
         </div>
         <div class="right">
@@ -408,7 +419,7 @@
                     <span class="name">Empty</span>
                     <div class="points" style="display: none;">(0)</div>
                 </div>
-                <div class="position" data-position="3">Position 3</div>
+                <div class="position" data-position="2">Position 3</div>
             </div>
         </div>
 
