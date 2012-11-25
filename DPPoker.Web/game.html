@@ -4,11 +4,16 @@
     <title>驢沖床 Poker</title>
 
     <!-- Scripts -->
-    <script src="Scripts/jquery-1.8.2.min.js"></script>
-    <script src="Scripts/jquery-ui-1.9.0.min.js"></script>
-    <script src="Scripts/jquery.signalR-0.5.3.min.js"></script>
+    <script src="Scripts/Libs/jquery-1.8.2.min.js"></script>
+    <script src="Scripts/Libs/jquery-ui-1.9.0.min.js"></script>
+    <script src="Scripts/Libs/jquery.signalR-0.5.3.min.js"></script>
     <script src="http://localhost:5857/signalr/hubs"></script>
-    <script src="Scripts/moment.min.js"></script>
+    <script src="Scripts/Libs/moment.min.js"></script>
+    <script src="Scripts/Game/toolkit.js"></script>
+    <script src="Scripts/Game/game-engine.js"></script>
+    <script src="Scripts/Game/game-server-callbacks.js"></script>
+    <script src="Scripts/Game/game-client-handlers.js"></script>
+    <script src="Scripts/Game/game-widgets.js"></script>
 
     <!-- Styles -->
     <link href="Content/stylesheets/normalize.css" rel="stylesheet" />
@@ -19,358 +24,35 @@
     <script>
         $(document).ready(function () {
             
-            var tableId;
-
-            $.support.cors = true;
-
-            $.connection.hub.url = "http://localhost:5857/signalr";
-            var pokerServer = $.connection.pokerServer;
-
-            $.connection.hub.sending(function () {
-                clientMessage('Establishing connection to server', 'info');
-            });
-            $.connection.hub.received(function (data) {
-                clientMessage('Data received...' + JSON.stringify(data), 'info');
-            });
-            $.connection.hub.error(function (error) {
-                clientMessage(error, 'error');
-            });
-            $.connection.hub.stateChanged(function (change) {
-                if (change.newState === $.signalR.connectionState.reconnecting) {
-                    clientMessage('Re-connecting', 'info');
-                }
-                else if (change.newState === $.signalR.connectionState.connected) {
-                    clientMessage('The server is online', 'info');
-                }
-            });
-            $.connection.hub.reconnected(function () {
-                clientMessage('Reconnected', 'info');
-            });
-
-            //any server broadcasted messages.  Usually debug info
-            pokerServer.broadcastToConsole = function (message) {
-                serverMessage(message, 'info');
-            };
-            pokerServer.dealCards = function (cards) {
-                serverMessage(JSON.stringify(cards), 'info');
-
-                $.each(cards, function (index, item) {
-                    
-                    var element = $('.my-cards .my-card-pos' + index);
-
-                    //clear out classes
-                    element.attr('class', '');
-
-                    //add classes back
-                    element.addClass('drag');
-                    element.addClass('my-card-pos' + index);
-
-                    //set card class
-                    $('.my-cards .my-card-pos' + index).addClass('_' + item);
-                });
-            };
-            pokerServer.playerTookSeat = function (name, position, avatar) {
-                if (name !== sessionStorage.playerName) {
-
-                    //update the seat and show the player info
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.name').text(name);
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.points').show();
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').removeClass('empty-avatar');
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.picture').attr('src', 'content/images/default-avatar-image.png');
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.picture').show();
-                }
-            };
-            pokerServer.playerLeftSeat = function (name, position) {
-                if (name !== sessionStorage.playerName) {
-                    //remove player
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.name').text('Empty');
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.points').hide();
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.picture').hide();
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').addClass('empty-avatar');
-                }
-            };
-            pokerServer.setPlayerState = function (players) {
-                
-                var playersCount = players.length;
-
-
-                var playerId = sessionStorage.playerId;
-                var playerPosition = sessionStorage.playerPosition;
-                if (playerId) {
-
-                    for (var i = 1; i < 5; i++) {
-                        if (i != playerPosition) {
-                            $('.avatar-contents .position[data-position="' + i + '"]').parent().children('.name-container').children('.name').text('Empty');
-                            $('.avatar-contents .position[data-position="' + i + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
-                            $('.avatar-contents .position[data-position="' + i + '"]').parent().children('.name-container').children('.points').hide();
-                            $('.avatar-contents .position[data-position="' + i + '"]').parent().children('.picture').hide();
-                            $('.avatar-contents .position[data-position="' + i + '"]').parent().children('.name-container').addClass('empty-avatar');
-                        }
-                    }
-
-                    $(players).each(function (index, item) {
-                        //update the seat and show the player info
-                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').children('.name').text(players[index]);
-                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
-                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').children('.points').show();
-                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').removeClass('empty-avatar');
-                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.picture').attr('src', 'content/images/default-avatar-image.png');
-                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.picture').show();
-                    });
-                } else {
-                    //set remaining positions
-                    for (var i = 1; i < players.length; i++) {
-
-                        var spot = '';
-                        switch (i) {
-                            case 0:
-                                $('.left .position').text('Position ' + (i + 1));
-                                $('.left .position').attr('data-position', i);
-                                spot = 'left';
-                                break;
-                            case 1:
-                                $('.top .position').text('Position ' + (i + 1));
-                                $('.top .position').attr('data-position', i);
-                                spot = 'top';
-                                break;
-                            case 2:
-                                $('.right .position').text('Position ' + (i + 1));
-                                $('.right .position').attr('data-position', i);
-                                spot = 'right';
-                                break;
-                            case 3:
-                                $('.bottom .position').text('Position ' + (i + 1));
-                                $('.bottom .position').attr('data-position', i);
-                                $('.leave-game').hide();
-                                spot = 'bottom';
-                                break;
-                            default:
-                        }
-
-                        $('.' + spot + ' .name-container .name').text(players[i]);
-                        $('.' + spot + ' .name-container .points').text('(' + 0 + ')');
-                        $('.' + spot + ' .name-container .points').show();
-                        $('.' + spot + ' .name-container').removeClass('empty-avatar');
-                        $('.' + spot + ' .picture').attr('src', 'content/images/default-avatar-image.png');
-                        $('.' + spot + ' .picture').show();
-                    }
-                }
-            }
-            pokerServer.playerSetCards = function (position) {
-                //show that this player has set their cards
-            };
-            pokerServer.setTableId = function (id) {
-
-                tableId = id;
-
-                //request player positions
-                pokerServer.getPlayerPositionsAtTable(tableId);
-            }
-            pokerServer.playerRegistered = function (playerId, position) {
-                //store player id
-                sessionStorage.setItem('playerId', playerId);
-                sessionStorage.setItem('playerPosition', position);
-                
-                //update ui
-                var playerName = sessionStorage.getItem('playerName');
-                updatePlayerPosition(playerName, position);
-
-                //update remaining positions
-                pokerServer.getPlayerPositionsAtTable(tableId);
-            };
-            pokerServer.dealCards = function (cards) {
-                //display my cards
-                $.each(cards, function (index, item) {
-
-                    var element = $('.my-cards .my-card-pos' + index);
-
-                    //clear out classes
-                    element.attr('class', '');
-
-                    //add classes back
-                    element.addClass('drag');
-                    element.addClass('my-card-pos' + index);
-
-                    //set card class
-                    $('.my-cards .my-card-pos' + index).addClass('_' + item);
-                });
-            };
-            pokerServer.playerReadiedUp = function (position) {
-                //show that the player is ready
-                $('.avatar-contents .position[data-position="' + position + '"]').parent().addClass('player-ready', 500);
-            };
-            pokerServer.playerCardsRearranged = function (position, cards) {
-                //update the cards at that position
-            };
-            pokerServer.gameStarted = function (gameId, timestamp) {
-                //alert that the game has started
-                //start timer for the 1st round
-            };
-            pokerServer.deckShuffled = function () {
-                //play deck shuffle sound & animation
-            };
+            //create toolkit
+            var toolkit = DEVGUYS.toolkit.create();
+            var logger = toolkit.logging({ appName: 'POKER GAME' });
             
-            // Start the connection
-            $.connection.hub.start({ jsonp: true }, function () {
-                clientMessage('Connection started!', 'info');
-
-                pokerServer.getTableId();
+            //create a game client
+            var gameClient = DEVGUYS.game.create({
+                hubUrl: 'http://localhost:5857/signalr',
+                supportsCors: true,
+                logger: logger
             });
-
-            //take seat handler
-            $('.take-seat').click(function () {
-                var promptName = prompt('Please enter your name.', '');
-                if (promptName !== null && promptName !== "") {
-                    sessionStorage.setItem('playerName', promptName);
-                    pokerServer.takeSeat(tableId, promptName);
-                } else {
-                    alert('You must enter your name to take a seat.  Try again.');
-                }
+            
+            //register server callbacks
+            var gameClientServerCallbacks = DEVGUYS.gameServerCallbacks.create({
+                gameClient: gameClient,
+                logger: logger
             });
+            gameClientServerCallbacks.register();
 
-            //ready-up handler
-            $('.ready-up').click(function () {
-                pokerServer.playerReady(tableId, sessionStorage.playerId);
-
-                //show that the player is ready
-                $('.avatar-contents .position[data-position="' + sessionStorage.playerPosition + '"]').parent().addClass('player-ready', 500);
-
-                //hide ready up button
-                $('.ready-up').hide();
+            //register client handlers
+            var gameClientHandlers = DEVGUYS.gameClientHandlers.create({
+                gameClient: gameClient
             });
+            gameClientHandlers.register();
 
-            //leave table handler
-            $('.leave-game').click(function () {
-                pokerServer.leaveGame(tableId, sessionStorage.playerId);
-
-                //show take seat button
-                $('.take-seat').show();
-
-                //hide leave table button
-                $('.leave-game').hide();
-
-                //hide ready up button
-                $('.ready-up').hide();
-
-                //update user box
-                $('.bottom .name-container .name').text('Empty');
-                $('.bottom .name-container .points').text('(' + 0 + ')');
-                $('.bottom .name-container .points').hide();
-                $('.bottom .picture').hide();
-                $('.bottom .name-container').addClass('empty-avatar');
-            });
-
-            $('.deal-cards').click(function () {
-                pokerServer.getCards();
-            });
-
-            $("#sortableSource1").sortable({
-                connectWith: ".connectedSortable"
-            }).disableSelection();
-            $("#sortableSource2").sortable({
-                connectWith: ".connectedSortable"
-            }).disableSelection();
-            $("#sortable1").sortable({
-                connectWith: ".connectedSortable"
-            }).disableSelection();
-            $("#sortable2").sortable({
-                connectWith: ".connectedSortable"
-            }).disableSelection();
-            $("#sortable3").sortable({
-                connectWith: ".connectedSortable"
-            }).disableSelection();
-
+            //initialize widgets
+            var gameWidgets = DEVGUYS.gameWidgets.create();
+            gameWidgets.initCardSortables();
 
         });
-
-        function serverMessage(message, level) {
-            var serverMessage = '<' + moment(Date.now()).format('hh:mm:ss') + '> SERVER:::==> ' + message;
-            switch (level) {
-                case 'error':
-                    console.error(serverMessage);
-                    break;
-                case 'warn':
-                    console.warn(serverMessage);
-                    break;
-                case 'log':
-                    console.log(serverMessage);
-                    break;
-                case 'info':
-                    console.info(serverMessage);
-                    break;
-                default:
-                    console.log(serverMessage);
-            }
-        }
-        function clientMessage(message, level) {
-            var clientMessage = '<' + moment(Date.now()).format('hh:mm:ss') + '> CLIENT:::==> ' + message;
-            switch (level) {
-                case 'error':
-                    console.error(clientMessage);
-                    break;
-                case 'warn':
-                    console.warn(clientMessage);
-                    break;
-                case 'log':
-                    console.log(clientMessage);
-                    break;
-                case 'info':
-                    console.info(clientMessage);
-                    break;
-                default:
-                    console.log(clientMessage);
-            }
-        }
-
-        function updatePlayerPosition(playerName, position) {
-            //hide take seat button
-            $('.take-seat').hide();
-
-            //show leave table button
-            $('.leave-game').show();
-
-            //show ready up button
-            $('.ready-up').show();
-
-            //update user box
-            $('.bottom .name-container .name').text(playerName);
-            $('.bottom .name-container .points').text('(' + 0 + ')');
-            $('.bottom .name-container .points').show();
-            $('.bottom .name-container').removeClass('empty-avatar');
-            $('.bottom .position').text('Position ' + position);
-            $('.bottom .position').attr('data-position', position);
-            $('.bottom .picture').attr('src', 'content/images/default-avatar-image.png');
-            $('.bottom .picture').show();
-
-            //set remaining positions
-            for (var i = 1; i < 4; i++) {
-
-                var pos = position;
-
-                if (pos >3) {
-                    pos = position - 3;
-                }
-
-                switch (i) {
-                    case 0:
-                        $('.left .position').text('Position ' + pos);
-                        $('.left .position').attr('data-position', pos);
-                        break;
-                    case 1:
-                        $('.top .position').text('Position ' + pos);
-                        $('.top .position').attr('data-position', pos);
-                        break;
-                    case 2:
-                        $('.right .position').text('Position ' + pos);
-                        $('.right .position').attr('data-position', pos);
-                        break;
-                    default:
-                }
-            }
-        }
-
     </script>
 </head>
 <body>
