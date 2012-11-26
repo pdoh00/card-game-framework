@@ -9,10 +9,10 @@
         var register = function () {
 
             //any server broadcasted messages.  Usually debug info
-            gameClient.broadcastToConsole = function (message) {
-                logger.logInfo(message);
-            };
-            gameClient.dealCards = function (cards) {
+            gameClient.broadcastToConsole(function (message) {
+                logger.logInfo('-SERVER-' + message);
+            });
+            gameClient.dealCards(function (cards) {
                 logger.logInfo(JSON.stringify(cards));
 
                 $.each(cards, function (index, item) {
@@ -29,8 +29,8 @@
                     //set card class
                     $('.my-cards .my-card-pos' + index).addClass('_' + item);
                 });
-            };
-            gameClient.playerTookSeat = function (name, position, avatar) {
+            });
+            gameClient.playerTookSeat(function (name, position, avatar) {
                 if (name !== sessionStorage.playerName) {
 
                     //update the seat and show the player info
@@ -41,8 +41,8 @@
                     $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.picture').attr('src', 'content/images/default-avatar-image.png');
                     $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.picture').show();
                 }
-            };
-            gameClient.playerLeftSeat = function (name, position) {
+            });
+            gameClient.playerLeftSeat(function (name, position) {
                 if (name !== sessionStorage.playerName) {
                     //remove player
                     $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.name').text('Empty');
@@ -51,8 +51,8 @@
                     $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.picture').hide();
                     $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').addClass('empty-avatar');
                 }
-            };
-            gameClient.setPlayerState = function (players) {
+            });
+            gameClient.setPlayerState(function (players) {
 
                 var playersCount = players.length;
 
@@ -118,11 +118,11 @@
                         $('.' + spot + ' .picture').show();
                     }
                 }
-            }
-            gameClient.playerSetCards = function (position) {
+            });
+            gameClient.playerSetCards(function (position) {
                 //show that this player has set their cards
-            };
-            gameClient.playerRegistered = function (playerId, position) {
+            });
+            gameClient.playerRegistered(function (playerId, position) {
                 //store player id
                 sessionStorage.setItem('playerId', playerId);
                 sessionStorage.setItem('playerPosition', position);
@@ -133,8 +133,8 @@
 
                 //update remaining positions
                 gameClient.getPlayerPositionsAtTable();
-            };
-            gameClient.dealCards = function (cards) {
+            });
+            gameClient.dealCards(function (cards) {
                 //display my cards
                 $.each(cards, function (index, item) {
 
@@ -150,21 +150,21 @@
                     //set card class
                     $('.my-cards .my-card-pos' + index).addClass('_' + item);
                 });
-            };
-            gameClient.playerReadiedUp = function (position) {
+            });
+            gameClient.playerReadiedUp(function (position) {
                 //show that the player is ready
                 $('.avatar-contents .position[data-position="' + position + '"]').parent().addClass('player-ready', 500);
-            };
-            gameClient.playerCardsRearranged = function (position, cards) {
+            });
+            gameClient.playerCardsRearranged(function (position, cards) {
                 //update the cards at that position
-            };
-            gameClient.gameStarted = function (gameId, timestamp) {
+            });
+            gameClient.gameStarted(function (gameId, timestamp) {
                 //alert that the game has started
                 //start timer for the 1st round
-            };
-            gameClient.deckShuffled = function () {
+            });
+            gameClient.deckShuffled(function () {
                 //play deck shuffle sound & animation
-            };
+            });
         };
 
         var updatePlayerPosition = function (playerName, position) {
@@ -212,7 +212,7 @@
                     default:
                 }
             }
-        }
+        };
 
         //reveal public objects
         return {
