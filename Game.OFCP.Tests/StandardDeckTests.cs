@@ -157,29 +157,44 @@ namespace Game.OFCP.Tests
 
             //act
             _theDeck.Shuffle();
-            var allTheCards = new HashSet<Card>(_theDeck.Deal(STANDARD_DECK_SIZE));
-            //var sort = allTheCards.OrderByDescending(c => c.Value).Reverse().ToList();
-
-            //var ec = _expectedDeckCards.ToList();
-
-            //for (int i = 0; i < STANDARD_DECK_SIZE; i++)
-            //{
-            //    Console.WriteLine(String.Format("{0} --> {1}", ec[i], sort[i]));
-            //}
-
-            //foreach (var c in sort)
-            //{
-            //    Console.WriteLine(c);
-            //}
             //assert
+            Assert.IsTrue(_expectedDeckCards.SetEquals(_theDeck.Deal(STANDARD_DECK_SIZE)));
+        }
 
-            //_expectedDeckCards.UnionWith(allTheCards);
-            //var intersect = _expectedDeckCards.Intersect(allTheCards).ToList();
-            //Console.WriteLine(union);
-            //Console.WriteLine(intersect);
-            var isSetEqual = _expectedDeckCards.SetEquals(allTheCards);
-            var diff = _expectedDeckCards.Except(allTheCards);
-            Assert.IsTrue(isSetEqual);
+        [TestMethod]
+        public void shuffled_deck_deals_unique_hands()
+        {
+            //arrange
+            List<Card> hand1;
+            List<Card> hand2;
+            List<Card> hand3;
+            List<Card> hand4;
+            _theDeck.Shuffle();
+
+            //act
+            hand1 = _theDeck.Deal(13);
+            hand2 = _theDeck.Deal(13);
+            hand3 = _theDeck.Deal(13);
+            hand4 = _theDeck.Deal(13);
+
+            //assert
+            Assert.AreEqual(0, hand1.Intersect(hand2).Count());
+            Assert.AreEqual(0, hand1.Intersect(hand3).Count());
+            Assert.AreEqual(0, hand1.Intersect(hand4).Count());
+            Assert.AreEqual(0, hand2.Intersect(hand3).Count());
+            Assert.AreEqual(0, hand2.Intersect(hand4).Count());
+            Assert.AreEqual(0, hand3.Intersect(hand4).Count());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]//assert
+        public void unshuffled_deck_throws_if_dealt()
+        {
+            //arrange
+
+            //act
+            _theDeck.Deal(1);
+            
         }
     }
 }
