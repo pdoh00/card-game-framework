@@ -137,7 +137,7 @@ namespace PokerCalculator
                     suit = 'c';
                 else if (( hand[i] & 0x4000 )==0x4000)
                     suit = 'd';
-                else if (( hand[i] & 0x2000 ) == 0x200)
+                else if (( hand[i] & 0x2000 ) == 0x2000)
                     suit = 'h';
                 else
                     suit = 's';
