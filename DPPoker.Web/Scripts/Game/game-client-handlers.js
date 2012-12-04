@@ -11,7 +11,7 @@
             $('.take-seat').click(function () {
                 var promptName = prompt('Please enter your name.', '');
                 if (promptName !== null && promptName !== "") {
-                    sessionStorage.setItem('playerName', promptName);
+                    sessionStorage.playerName = promptName;
                     gameClient.takeSeat({ playerName: promptName });
                 } else {
                     alert('You must enter your name to take a seat.  Try again.');
@@ -32,6 +32,9 @@
             //leave table handler
             $('.leave-game').click(function () {
                 gameClient.leaveGame({ playerId: sessionStorage.playerId });
+
+                //clear out session storage
+                sessionStorage.clear();
 
                 //show take seat button
                 $('.take-seat').show();

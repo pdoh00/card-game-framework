@@ -82,7 +82,7 @@
                     });
                 } else {
                     //set remaining positions
-                    for (var i = 1; i < players.length; i++) {
+                    for (var i = 0; i < players.length; i++) {
 
                         var spot = '';
                         switch (i) {
@@ -124,11 +124,11 @@
             });
             gameClient.playerRegistered(function (playerId, position) {
                 //store player id
-                sessionStorage.setItem('playerId', playerId);
-                sessionStorage.setItem('playerPosition', position);
+                sessionStorage.playerId = playerId;
+                sessionStorage.playerPosition = position;
 
                 //update ui
-                var playerName = sessionStorage.getItem('playerName');
+                var playerName = sessionStorage.playerName;
                 updatePlayerPosition(playerName, position);
 
                 //update remaining positions
@@ -182,31 +182,31 @@
             $('.bottom .name-container .points').text('(' + 0 + ')');
             $('.bottom .name-container .points').show();
             $('.bottom .name-container').removeClass('empty-avatar');
-            $('.bottom .position').text('Position ' + position);
+            $('.bottom .position').text('Position ' + (position + 1));
             $('.bottom .position').attr('data-position', position);
             $('.bottom .picture').attr('src', 'content/images/default-avatar-image.png');
             $('.bottom .picture').show();
 
             //set remaining positions
-            for (var i = 1; i < 4; i++) {
+            for (var i = 0; i < 3; i++) {
 
-                var pos = position;
+                var pos = position + i + 1;
 
                 if (pos > 3) {
-                    pos = position - 3;
+                    pos = position - 1;
                 }
 
                 switch (i) {
                     case 0:
-                        $('.left .position').text('Position ' + pos);
+                        $('.left .position').text('Position ' + (pos + 1));
                         $('.left .position').attr('data-position', pos);
                         break;
                     case 1:
-                        $('.top .position').text('Position ' + pos);
+                        $('.top .position').text('Position ' + (pos + 1));
                         $('.top .position').attr('data-position', pos);
                         break;
                     case 2:
-                        $('.right .position').text('Position ' + pos);
+                        $('.right .position').text('Position ' + (pos + 1));
                         $('.right .position').attr('data-position', pos);
                         break;
                     default:

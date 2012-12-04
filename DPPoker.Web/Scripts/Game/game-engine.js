@@ -28,7 +28,7 @@
         //RECEIVED
         $.connection.hub.received(function (data) {
             if (data.Result !== null && data.Error !== null && data.StackTrace !== null) {
-                logger.logInfo('Data received...' + JSON.stringify(data));
+                logger.logInfo('Received:' + JSON.stringify(data));
             }
         });
         //ERROR

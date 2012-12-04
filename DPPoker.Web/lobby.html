@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>驢沖床 Poker</title>
+
+    <!-- Scripts -->
+    <script src="Scripts/Libs/jquery-1.8.2.min.js"></script>
+    <script src="Scripts/Libs/jquery-ui-1.9.0.min.js"></script>
+    <script src="Scripts/Libs/jquery.signalR-0.5.3.min.js"></script>
+    <script src="http://localhost:5857/signalr/hubs"></script>
+    <script src="Scripts/Libs/moment.min.js"></script>
+    <script src="Scripts/Game/toolkit.js"></script>
+    <script src="Scripts/Game/game-engine.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            //create toolkit
+            var toolkit = DEVGUYS.toolkit.create();
+            var logger = toolkit.logging({ appName: 'POKER GAME (Lobby)' });
+
+            //create a game client
+            var gameClient = DEVGUYS.game.create({
+                hubUrl: 'http://localhost:5857/signalr',
+                supportsCors: true,
+                logger: logger
+            });
+
+            //register server callbacks
+            var gameClientServerCallbacks = DEVGUYS.gameServerCallbacks.create({
+                gameClient: gameClient,
+                logger: logger
+            });
+            gameClientServerCallbacks.register();
+
+            //register client handlers
+            var gameClientHandlers = DEVGUYS.gameClientHandlers.create({
+                gameClient: gameClient
+            });
+            gameClientHandlers.register();
+
+            //initialize widgets
+            var gameWidgets = DEVGUYS.gameWidgets.create();
+            gameWidgets.initCardSortables();
+
+        });
+    </script>
+</head>
+<body>
+
+    <h1>
+        This is the lobby!
+    </h1>
+    <div>
+        <h3>Tables</h3>
+        <ul>
+            <li><a href="/game.html?table=">Table 1</a></li>
+        </ul>
+    </div>
+
+</body>
+</html>

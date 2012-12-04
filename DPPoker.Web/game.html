@@ -23,7 +23,27 @@
 
     <script>
         $(document).ready(function () {
+
+            //#region TEMPORARY
+
+            //**************************************
+            //TEMPORARY UNTIL WE GET FEDERATED AUTH*
+            //--------------------------------------
+
+            //check session storage for player info
+            var playerId = sessionStorage.playerId;
+            var playerName, playerPosition;
+            if (playerId) {
+                playerName = sessionStorage.playerName;
+                playerPosition = sessionStorage.playerPosition;
+            }
+
+            //**************************************
+            //TEMPORARY UNTIL WE GET FEDERATED AUTH*
+            //--------------------------------------
             
+            //#endregion
+
             //create toolkit
             var toolkit = DEVGUYS.toolkit.create();
             var logger = toolkit.logging({ appName: 'POKER GAME' });
