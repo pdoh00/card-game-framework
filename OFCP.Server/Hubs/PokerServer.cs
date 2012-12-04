@@ -22,12 +22,18 @@ namespace OFCP.Server.Hubs
         private readonly ITableProjection _tables;
         private readonly IPlayerConnectionMap _playerConnectionMap;
 
-
         public PokerServer(ICommandBus cmdBus, ITableProjection tableProjection, IPlayerConnectionMap playerConnectionMap)
         {
             _cmdBus = cmdBus;
             _tables = tableProjection;
             _playerConnectionMap = playerConnectionMap;
+
+            //TODO: Remove once we have accounts.//
+            _availablePlayerIds.Push(PLAYER_1_ID);
+            _availablePlayerIds.Push(PLAYER_2_ID);
+            _availablePlayerIds.Push(PLAYER_3_ID);
+            _availablePlayerIds.Push(PLAYER_4_ID);
+            ///////////////////////////////////////
         }
 
         //***********************************************************************
@@ -133,9 +139,19 @@ namespace OFCP.Server.Hubs
             Groups.Add(Context.ConnectionId, tableId);
         }
 
+        //TODO: Remove these hard coded id's once we have an Account system.//
+        private const string PLAYER_1_ID = "49D04D385CF4464C8076EB60FA8913DB";
+        private const string PLAYER_2_ID = "F1E3D466E6CA411796FE66EA9F350C79";
+        private const string PLAYER_3_ID = "244916BCC142473A9C7037D9A92F11BB";
+        private const string PLAYER_4_ID = "45E8F431B8D64BB2A11F5E6962BFCEE6";
+        private Stack<string> _availablePlayerIds = new Stack<string>(4);
+        //////////////////////////////////////////////////////////////////////
+
         public void TakeSeat(string tableId, string playerName)
         {
-            var playerId = Guid.NewGuid().ToString();
+            //TODO: Remove once we have accounts////
+            var playerId = _availablePlayerIds.Pop();
+            ////////////////////////////////////////
             _playerConnectionMap.UpdateConnectionIdForPlayer(playerId, Context.ConnectionId);
             _cmdBus.Send(new SeatPlayerCommand(tableId, playerId, playerName));
             
@@ -148,6 +164,9 @@ namespace OFCP.Server.Hubs
 
         public void LeaveGame(string tableId, string playerId)
         {
+            //TODO: Remove once we have accounts////
+            _availablePlayerIds.Push(playerId);
+            ////////////////////////////////////////
             _playerConnectionMap.RemovePlayer(playerId);
             _cmdBus.Send(new RemovePlayerCommand(tableId, playerId));
             Groups.Remove(Context.ConnectionId, tableId);

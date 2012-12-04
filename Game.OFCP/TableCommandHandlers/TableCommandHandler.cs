@@ -18,6 +18,9 @@ namespace Game.OFCP.TableCommandHandlers
         private readonly IRepository<Table> TableRepository;
         private object _padLock = new object();
 
+        //TODO: Remove this once we have a lobby and can create tables on the fly.
+        private const string SINGLE_TABLE_ID = "EC0C79D3D10D4B8088B4EA9D0D9DF537";
+
         public TableCommandHandler(IRepository<Table> tableRepository)
         {
             TableRepository = tableRepository;
@@ -61,7 +64,8 @@ namespace Game.OFCP.TableCommandHandlers
             {
                 case OFCP_Game.OFCP_GAME_TYPE:
                     {
-                        var table = new Table(Guid.NewGuid().ToString().Replace("-", String.Empty), MAX_PLAYERS_FOR_OFCP, OFCP_Game.OFCP_GAME_TYPE);
+                        //TODO: Replace with Guid.NewGuid().ToString().Replace("-", String.Empty) later.
+                        var table = new Table(SINGLE_TABLE_ID, MAX_PLAYERS_FOR_OFCP, OFCP_Game.OFCP_GAME_TYPE);
                         TableRepository.Save(table, -1);
                         break;
                     }
