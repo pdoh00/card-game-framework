@@ -15,35 +15,42 @@
     <script>
         $(document).ready(function () {
 
-            //create toolkit
-            var toolkit = DEVGUYS.toolkit.create();
-            var logger = toolkit.logging({ appName: 'POKER GAME (Lobby)' });
-
-            //create a game client
-            var gameClient = DEVGUYS.game.create({
-                hubUrl: 'http://localhost:5857/signalr',
-                supportsCors: true,
-                logger: logger
+            $('#player1').click(function () {
+                clearCache();
+                sessionStorage.playerId = "49D04D385CF4464C8076EB60FA8913DB";
+                sessionStorage.playerName = "Andy";
+                window.location = "game.html?table=EC0C79D3D10D4B8088B4EA9D0D9DF537" 
+            });
+            $('#player2').click(function () {
+                clearCache();
+                sessionStorage.playerName = "Brian";
+                sessionStorage.playerId = "F1E3D466E6CA411796FE66EA9F350C79";
+                window.location = "game.html?table=EC0C79D3D10D4B8088B4EA9D0D9DF537"
+            });
+            $('#player3').click(function () {
+                clearCache();
+                sessionStorage.playerName = "Carol";
+                sessionStorage.playerId = "244916BCC142473A9C7037D9A92F11BB";
+                window.location = "game.html?table=EC0C79D3D10D4B8088B4EA9D0D9DF537"
+            });
+            $('#player4').click(function () {
+                clearCache();
+                sessionStorage.playerName = "Dexter";
+                sessionStorage.playerId = "45E8F431B8D64BB2A11F5E6962BFCEE6";
+                window.location = "game.html?table=EC0C79D3D10D4B8088B4EA9D0D9DF537"
             });
 
-            //register server callbacks
-            var gameClientServerCallbacks = DEVGUYS.gameServerCallbacks.create({
-                gameClient: gameClient,
-                logger: logger
+            $('#clearCache').click(function () {
+                alert('Cache is clear...');
+                clearCache();
             });
-            gameClientServerCallbacks.register();
-
-            //register client handlers
-            var gameClientHandlers = DEVGUYS.gameClientHandlers.create({
-                gameClient: gameClient
-            });
-            gameClientHandlers.register();
-
-            //initialize widgets
-            var gameWidgets = DEVGUYS.gameWidgets.create();
-            gameWidgets.initCardSortables();
 
         });
+
+        function clearCache() {
+            sessionStorage.clear();
+            localStorage.clear();
+        }
     </script>
 </head>
 <body>
@@ -51,10 +58,16 @@
     <h1>
         This is the lobby!
     </h1>
+    <p>
+        <a href="#" id="clearCache">Clear Cache...</a>
+    </p>
     <div>
-        <h3>Tables</h3>
+        <h3>Table #EC0C79D3D10D4B8088B4EA9D0D9DF537</h3>
         <ul>
-            <li><a href="/game.html?table=">Table 1</a></li>
+            <li><a id="player1" href="#">Join Table as Player 1 (Andy)</a></li>
+            <li><a id="player2" href="#">Join Table as Player 2 (Brian)</a></li>
+            <li><a id="player3" href="#">Join Table as Player 3 (Carol)</a></li>
+            <li><a id="player4" href="#">Join Table as Player 4 (Dexter)</a></li>
         </ul>
     </div>
 

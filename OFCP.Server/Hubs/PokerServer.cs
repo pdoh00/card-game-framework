@@ -28,12 +28,12 @@ namespace OFCP.Server.Hubs
             _tables = tableProjection;
             _playerConnectionMap = playerConnectionMap;
 
-            //TODO: Remove once we have accounts.//
-            _availablePlayerIds.Push(PLAYER_1_ID);
-            _availablePlayerIds.Push(PLAYER_2_ID);
-            _availablePlayerIds.Push(PLAYER_3_ID);
-            _availablePlayerIds.Push(PLAYER_4_ID);
-            ///////////////////////////////////////
+            ////TODO: Remove once we have accounts.//
+            //_availablePlayerIds.Push(PLAYER_1_ID);
+            //_availablePlayerIds.Push(PLAYER_2_ID);
+            //_availablePlayerIds.Push(PLAYER_3_ID);
+            //_availablePlayerIds.Push(PLAYER_4_ID);
+            /////////////////////////////////////////
         }
 
         //***********************************************************************
@@ -140,17 +140,17 @@ namespace OFCP.Server.Hubs
         }
 
         //TODO: Remove these hard coded id's once we have an Account system.//
-        private const string PLAYER_1_ID = "49D04D385CF4464C8076EB60FA8913DB";
-        private const string PLAYER_2_ID = "F1E3D466E6CA411796FE66EA9F350C79";
-        private const string PLAYER_3_ID = "244916BCC142473A9C7037D9A92F11BB";
-        private const string PLAYER_4_ID = "45E8F431B8D64BB2A11F5E6962BFCEE6";
-        private Stack<string> _availablePlayerIds = new Stack<string>(4);
+        //private const string PLAYER_1_ID = "49D04D385CF4464C8076EB60FA8913DB";
+        //private const string PLAYER_2_ID = "F1E3D466E6CA411796FE66EA9F350C79";
+        //private const string PLAYER_3_ID = "244916BCC142473A9C7037D9A92F11BB";
+        //private const string PLAYER_4_ID = "45E8F431B8D64BB2A11F5E6962BFCEE6";
+        //private Stack<string> _availablePlayerIds = new Stack<string>(4);
         //////////////////////////////////////////////////////////////////////
 
-        public void TakeSeat(string tableId, string playerName)
+        public void TakeSeat(string tableId, string playerId, string playerName)
         {
             //TODO: Remove once we have accounts////
-            var playerId = _availablePlayerIds.Pop();
+            //var playerId = _availablePlayerIds.Pop();
             ////////////////////////////////////////
             _playerConnectionMap.UpdateConnectionIdForPlayer(playerId, Context.ConnectionId);
             _cmdBus.Send(new SeatPlayerCommand(tableId, playerId, playerName));
@@ -165,7 +165,7 @@ namespace OFCP.Server.Hubs
         public void LeaveGame(string tableId, string playerId)
         {
             //TODO: Remove once we have accounts////
-            _availablePlayerIds.Push(playerId);
+            //_availablePlayerIds.Push(playerId);
             ////////////////////////////////////////
             _playerConnectionMap.RemovePlayer(playerId);
             _cmdBus.Send(new RemovePlayerCommand(tableId, playerId));
@@ -232,64 +232,6 @@ namespace OFCP.Server.Hubs
         }
 
         #endregion
-
-        //#region IClientChannel
-
-        //public void BroadcastPlayerSeated(string tableId, string name, int position)
-        //{
-        //    Clients[tableId].playerTookSeat(name, position, "");
-        //}
-
-        //public void BroadcastPlayerLeft(string tableId, string name, int position)
-        //{
-        //    Clients[tableId].playerLeftSeat(name, position);
-        //}
-
-        //public void BroadcastPlayerHandSet(string tableId, int position)
-        //{
-        //    Clients[tableId].playerSetCards(position);
-        //}
-
-        //public void BroadcastPlayerCardsRearranged(string tableId, int playerPosition, bool[] cards)
-        //{
-        //    Clients[tableId].playerCardsRearranged(playerPosition, cards);
-        //}
-
-        //public void BroadcastDeckShuffled(string tableId)
-        //{
-        //    Clients[tableId].deckShuffled();
-        //}
-
-        //public void BroadcastGameStarted(string tableId, string gameId, DateTime timestamp)
-        //{
-        //    Clients[tableId].gameStarted(gameId, timestamp);
-        //}
-
-        //public void BroadcastPlayerReady(string tableId, int position)
-        //{
-        //    Clients[tableId].playerReadiedUp(position);
-        //}
-
-        //public void BroadcastMessage(string tableId, string message)
-        //{
-        //    Clients[tableId].broadcastToConsole(message);
-        //}
-
-        //public void PlayerDealtCards(string clientId, string[] cards)
-        //{
-        //    Clients[_playerIdMap[clientId]].dealCards(cards);
-        //}
-
-        //public void PlayerSeated(string clientId, int position)
-        //{
-        //    var connectionId = "";
-        //    if (_playerIdMap.TryGetValue(clientId, out connectionId))
-        //    {
-        //        Clients[connectionId].playerRegistered(clientId, position);
-        //    }
-        //}
-
-        //#endregion
 
     }
 }

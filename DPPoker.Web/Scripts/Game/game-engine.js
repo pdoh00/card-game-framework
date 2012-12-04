@@ -11,15 +11,25 @@
         $.connection.hub.url = options.hubUrl;
 
         var pokerServer = $.connection.pokerServer;
-        var tableId = options.tableId || '';
+        var tableId = options.tableId;
         var logger = options.logger;
+        var playerId = options.playerId;
+        var playerName = options.playerName;
+        var playerPosition = options.playerPosition;
 
         //#region HUB GLOBAL CONNECTION HANDLERS
 
         //START
         $.connection.hub.start({ jsonp: true }, function () {
             logger.logInfo('Connection started!');
-            pokerServer.getTableId();
+
+            if (playerPosition) {
+                //update ui
+                updatePlayerPosition(playerName, playerPosition);
+            }
+
+            //request player positions
+            pokerServer.getPlayerPositionsAtTable(tableId);
         });
         //SENDING
         $.connection.hub.sending(function () {
@@ -154,29 +164,22 @@
 
         //#region PRIVATE HANDLERS
 
-        pokerServer.setTableId = function (id) {
-
-            tableId = id;
-
-            //request player positions
-            pokerServer.getPlayerPositionsAtTable(tableId);
-        };
 
         //#endregion
 
         //#region PUBLIC METHODS
 
         //Seats the player at the table
-        var takeSeat = function (args) {
-            pokerServer.takeSeat(tableId, args.playerName);
+        var takeSeat = function () {
+            pokerServer.takeSeat(tableId, playerId, playerName);
         };
         //Indicates that the player is ready
-        var playerReady = function (args) {
-            pokerServer.playerReady(tableId, args.playerId);
+        var playerReady = function () {
+            pokerServer.playerReady(tableId, playerId);
         };
         //Will remove the player from the table and game
-        var leaveGame = function (args) {
-            pokerServer.leaveGame(tableId, args.playerId);
+        var leaveGame = function () {
+            pokerServer.leaveGame(tableId, playerId);
         };
         //Requests to get the player positions at the table
         var getPlayerPositionsAtTable = function () {
@@ -184,6 +187,56 @@
         };
 
         //#endregion
+
+
+
+        var updatePlayerPosition = function (playerName, position) {
+            //hide take seat button
+            $('.take-seat').hide();
+
+            //show leave table button
+            $('.leave-game').show();
+
+            //show ready up button
+            $('.ready-up').show();
+
+            //update user box
+            $('.bottom .name-container .name').text(playerName);
+            $('.bottom .name-container .points').text('(' + 0 + ')');
+            $('.bottom .name-container .points').show();
+            $('.bottom .name-container').removeClass('empty-avatar');
+            $('.bottom .position').text('Position ' + (position + 1));
+            $('.bottom .position').attr('data-position', position);
+            $('.bottom .picture').attr('src', 'content/images/default-avatar-image.png');
+            $('.bottom .picture').show();
+
+            //set remaining positions
+            for (var i = 0; i < 3; i++) {
+
+                var pos = position + i + 1;
+
+                if (pos > 3) {
+                    pos = position - 1;
+                }
+
+                switch (i) {
+                    case 0:
+                        $('.left .position').text('Position ' + (pos + 1));
+                        $('.left .position').attr('data-position', pos);
+                        break;
+                    case 1:
+                        $('.top .position').text('Position ' + (pos + 1));
+                        $('.top .position').attr('data-position', pos);
+                        break;
+                    case 2:
+                        $('.right .position').text('Position ' + (pos + 1));
+                        $('.right .position').attr('data-position', pos);
+                        break;
+                    default:
+                }
+            }
+        };
+
 
         //reveal public objects
         return {
@@ -193,6 +246,7 @@
             takeSeat: takeSeat,
             playerReady: playerReady,
             leaveGame: leaveGame,
+            getPlayerPositionsAtTable: getPlayerPositionsAtTable,
             //SERVER CALLBACK HANDLERS
             broadcastToConsole: setBroadcastToConsoleHandler,
             dealCards: setDealCardsHandler,

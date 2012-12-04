@@ -47,24 +47,36 @@
             //create toolkit
             var toolkit = DEVGUYS.toolkit.create();
             var logger = toolkit.logging({ appName: 'POKER GAME' });
+
+            //get table id from querystring
+            var tableId = toolkit.urlHelpers().getUrlEncodedKey('table');
             
             //create a game client
             var gameClient = DEVGUYS.game.create({
                 hubUrl: 'http://localhost:5857/signalr',
                 supportsCors: true,
-                logger: logger
+                logger: logger,
+                tableId: tableId,
+                playerId: playerId,
+                playerName: playerName,
+                playerPosition: playerPosition
             });
             
             //register server callbacks
             var gameClientServerCallbacks = DEVGUYS.gameServerCallbacks.create({
                 gameClient: gameClient,
-                logger: logger
+                logger: logger,
+                playerId: playerId,
+                playerName: playerName
             });
             gameClientServerCallbacks.register();
 
             //register client handlers
             var gameClientHandlers = DEVGUYS.gameClientHandlers.create({
-                gameClient: gameClient
+                gameClient: gameClient,
+                playerId: playerId,
+                playerName: playerName,
+                playerPosition: playerPosition
             });
             gameClientHandlers.register();
 
@@ -77,6 +89,7 @@
 </head>
 <body>
     <input class="deal-cards" type="button" value="Deal Cards" />
+    <a href="lobby.html">GO TO LOBBY</a>
     <input class="take-seat" type="button" value="Sit Down" />
 
     <div class="table">

@@ -4,6 +4,8 @@
     //creates an object to handle all server 2 clients callbacks
     var createGameServerCallbacks = function (options) {
 
+        var playerId = options.playerId;
+        var playerName = options.playerName;
         var gameClient = options.gameClient;
         var logger = options.logger;
         var register = function () {
@@ -31,7 +33,7 @@
                 });
             });
             gameClient.playerTookSeat(function (name, position, avatar) {
-                if (name !== sessionStorage.playerName) {
+                if (name !== playerName) {
 
                     //update the seat and show the player info
                     $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.name').text(name);
@@ -43,7 +45,7 @@
                 }
             });
             gameClient.playerLeftSeat(function (name, position) {
-                if (name !== sessionStorage.playerName) {
+                if (name !== playerName) {
                     //remove player
                     $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.name').text('Empty');
                     $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
@@ -56,9 +58,6 @@
 
                 var playersCount = players.length;
 
-
-                var playerId = sessionStorage.playerId;
-                var playerPosition = sessionStorage.playerPosition;
                 if (playerId) {
 
                     for (var i = 1; i < 5; i++) {
@@ -124,11 +123,9 @@
             });
             gameClient.playerRegistered(function (playerId, position) {
                 //store player id
-                sessionStorage.playerId = playerId;
                 sessionStorage.playerPosition = position;
 
                 //update ui
-                var playerName = sessionStorage.playerName;
                 updatePlayerPosition(playerName, position);
 
                 //update remaining positions
@@ -217,7 +214,8 @@
         //reveal public objects
         return {
             //METHODS
-            register: register
+            register: register,
+            updatePlayerPosition: updatePlayerPosition
         };
     };
 
