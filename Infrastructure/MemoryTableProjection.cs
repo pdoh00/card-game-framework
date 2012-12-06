@@ -16,7 +16,24 @@ namespace Infrastructure
             TableId = tableId;
             GameType = gameType;
         }
+    }
 
+    public struct TableState
+    {
+        public readonly string TableId;
+        public readonly string GameType;
+        public readonly PlayerDetails[] PlayerDetails;
+
+        public TableState(TableDetails tblDetails, SortedDictionary<int, PlayerDetails> playerDetails)
+        {
+            TableId = tblDetails.TableId;
+            GameType = tblDetails.GameType;
+            PlayerDetails = new PlayerDetails[4];
+            foreach (var p in playerDetails)
+            {
+                PlayerDetails[p.Key] = p.Value;
+            }
+        }
     }
 
     public class MemoryTableProjection : ITableProjection
@@ -72,18 +89,19 @@ namespace Infrastructure
             SortedDictionary<int, PlayerDetails> players;
             if (_tables.TryGetValue(tableId, out players))
             {
-                //var playerPositions = new List<PlayerDetails>(players.Count);
-                //for (int i = 0; i < players.Count; i++)
-                //{
-                //    playerPositions.Add(players[i + 1]); // JB - had to add a +1 because position isn't keyed on a zero indexed array
-                //}
-
                 return players.Values.ToList();
             }
             else
                 throw new InvalidOperationException(String.Format("Cannot get player data from non-existant table {0}", tableId));
+        }
 
-            
+        public TableState GetTableState(string tableId)
+        {
+            //TODO: Make this index code safe if we keep the in mem projection.
+            var tableDetails = _tableDetails[tableId];
+            var playerDetails = _tables[tableId];
+
+            return new TableState(tableDetails, _tables[tableId]);
         }
 
     }

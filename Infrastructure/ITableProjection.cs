@@ -21,5 +21,6 @@ namespace Infrastructure
         List<PlayerDetails> GetPlayerPositions(string tableId);
         void RemovePlayer(string tableId, int position);
         List<TableDetails> ListTables();
+        TableState GetTableState(string tableId);
     }
 }

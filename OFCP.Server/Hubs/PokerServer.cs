@@ -178,6 +178,14 @@ namespace OFCP.Server.Hubs
             Clients[tableId].setPlayerState(players);
         }
 
+        public void GetTableState(string tableId)
+        {
+            var tableDetails = _tables.ListTables().Select(tbl => tbl.TableId == tableId);
+            var playerDetails = _tables.GetPlayerPositions(tableId);
+            var tableState = _tables.GetTableState(tableId);
+            Clients[Context.ConnectionId].setTableState(tableState);
+        }
+
         /// <summary>
         /// Sets all of the players hands for the current game.
         /// </summary>
