@@ -5,4 +5,4 @@ This card game framework is a work in progress and nowhere near even a prototype
 
 Until then...Stay Tuned.
 
--- THE DEV GUYS
+-- THE DEV GUYS!
