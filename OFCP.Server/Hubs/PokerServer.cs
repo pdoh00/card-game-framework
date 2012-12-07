@@ -149,6 +149,8 @@ namespace OFCP.Server.Hubs
 
         public void TakeSeat(string tableId, string playerId, string playerName)
         {
+            //TODO: Should we check right here if the table/player are real?
+
             //TODO: Remove once we have accounts////
             //var playerId = _availablePlayerIds.Pop();
             ////////////////////////////////////////
