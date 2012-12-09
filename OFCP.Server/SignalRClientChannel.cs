@@ -69,6 +69,16 @@ namespace OFCP.Server
             GetPokerServerHubContext().Clients[connectionId].playerRegistered(playerId, position);
         }
 
+        public void TableInitialized(string connectionId)
+        {
+            GetPokerServerHubContext().Clients[connectionId].tableInitialized();
+        }
+
+        public void SetTableState(string connectionId, TableState tableState)
+        {
+            GetPokerServerHubContext().Clients[connectionId].setTableState(tableState);
+        }
+
         private static IHubContext GetPokerServerHubContext()
         {
             var ctx = GlobalHost.ConnectionManager.GetHubContext<PokerServer>();

@@ -6,8 +6,8 @@
     <!-- Scripts -->
     <script src="Scripts/Libs/jquery-1.8.2.min.js"></script>
     <script src="Scripts/Libs/jquery-ui-1.9.0.min.js"></script>
-    <script src="Scripts/Libs/jquery.signalR-0.5.3.min.js"></script>
-    <script src="http://localhost:5857/signalr/hubs"></script>
+    <script src="Scripts/Libs/jquery.signalR-0.5.3.js"></script>
+    <script src="OFCP.Server/signalr/hubs"></script>
     <script src="Scripts/Libs/moment.min.js"></script>
     <script src="Scripts/Game/toolkit.js"></script>
     <script src="Scripts/Game/game-engine.js"></script>
@@ -32,10 +32,20 @@
 
             //check session storage for player info
             var playerId = sessionStorage.playerId;
-            var playerName, playerPosition;
+            var playerName;
+            var playerPosition = -1;
+
             if (playerId) {
                 playerName = sessionStorage.playerName;
-                playerPosition = sessionStorage.playerPosition;
+                if (sessionStorage.playerPosition) {
+                    playerPosition = parseInt(sessionStorage.playerPosition);
+                } else {
+                    sessionStorage.playerPosition = playerPosition;
+                }
+            } else {
+                //this player is considered a guest
+                playerPosition = -1;
+                sessionStorage.playerPosition = playerPosition;
             }
 
             //**************************************
@@ -53,13 +63,13 @@
             
             //create a game client
             var gameClient = DEVGUYS.game.create({
-                hubUrl: 'http://localhost:5857/signalr',
+                hubUrl: 'http://' + document.location.host + '/OFCP.Server/signalr',
                 supportsCors: true,
+                jsonp: true,
                 logger: logger,
                 tableId: tableId,
                 playerId: playerId,
-                playerName: playerName,
-                playerPosition: playerPosition
+                playerName: playerName
             });
             
             //register server callbacks
@@ -67,7 +77,8 @@
                 gameClient: gameClient,
                 logger: logger,
                 playerId: playerId,
-                playerName: playerName
+                playerName: playerName,
+                tableId: tableId
             });
             gameClientServerCallbacks.register();
 
@@ -75,8 +86,7 @@
             var gameClientHandlers = DEVGUYS.gameClientHandlers.create({
                 gameClient: gameClient,
                 playerId: playerId,
-                playerName: playerName,
-                playerPosition: playerPosition
+                playerName: playerName
             });
             gameClientHandlers.register();
 
@@ -90,7 +100,7 @@
 <body>
     <input class="deal-cards" type="button" value="Deal Cards" />
     <a href="lobby.html">GO TO LOBBY</a>
-    <input class="take-seat" type="button" value="Sit Down" />
+    <input class="take-seat" type="button" value="Sit Down" style="display: none;" />
 
     <div class="table">
 
@@ -102,7 +112,7 @@
                     <span class="name">Empty</span>
                     <div class="points" style="display: none;">(0)</div>
                 </div>
-                <div class="position" data-position="1">Position 2</div>
+                <div class="position" data-position="1">Loading...</div>
             </div>
         </div>
         <div class="bottom">
@@ -112,7 +122,7 @@
                     <span class="name">Empty</span>
                     <div class="points" style="display: none;">(0)</div>
                 </div>
-                <div class="position" data-position="3">Position 4</div>
+                <div class="position" data-position="3">Loading...</div>
             </div>
             <input class="leave-game" type="button" value="Leave Game" style="display: none;" />
             <input class="ready-up" type="button" value="Ready" style="display: none;" />
@@ -124,7 +134,7 @@
                     <span class="name">Empty</span>
                     <div class="points" style="display: none;">(0)</div>
                 </div>
-                <div class="position" data-position="0">Position 1</div>
+                <div class="position" data-position="0">Loading...</div>
             </div>
         </div>
         <div class="right">
@@ -134,7 +144,7 @@
                     <span class="name">Empty</span>
                     <div class="points" style="display: none;">(0)</div>
                 </div>
-                <div class="position" data-position="2">Position 3</div>
+                <div class="position" data-position="2">Loading...</div>
             </div>
         </div>
 

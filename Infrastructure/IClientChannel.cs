@@ -22,6 +22,7 @@ namespace Infrastructure
 
         void PlayerDealtCards(string clientId, string[] cards);
         void PlayerSeated(string clientId, int position);
-        
+        void TableInitialized(string connectionId);
+        void SetTableState(string connectionId, TableState tableState);
     }
 }

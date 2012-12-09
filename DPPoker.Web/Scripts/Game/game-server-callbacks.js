@@ -8,115 +8,78 @@
         var playerName = options.playerName;
         var gameClient = options.gameClient;
         var logger = options.logger;
+        var tableId = options.tableId;
+
         var register = function () {
 
             //any server broadcasted messages.  Usually debug info
             gameClient.broadcastToConsole(function (message) {
                 logger.logInfo('-SERVER-' + message);
             });
-            gameClient.dealCards(function (cards) {
-                logger.logInfo(JSON.stringify(cards));
-
-                $.each(cards, function (index, item) {
-
-                    var element = $('.my-cards .my-card-pos' + index);
-
-                    //clear out classes
-                    element.attr('class', '');
-
-                    //add classes back
-                    element.addClass('drag');
-                    element.addClass('my-card-pos' + index);
-
-                    //set card class
-                    $('.my-cards .my-card-pos' + index).addClass('_' + item);
-                });
-            });
             gameClient.playerTookSeat(function (name, position, avatar) {
-                if (name !== playerName) {
-
-                    //update the seat and show the player info
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.name').text(name);
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.points').show();
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').removeClass('empty-avatar');
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.picture').attr('src', 'content/images/default-avatar-image.png');
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.picture').show();
-                }
+                gameClient.getTableState(tableId);
             });
             gameClient.playerLeftSeat(function (name, position) {
-                if (name !== playerName) {
-                    //remove player
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.name').text('Empty');
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').children('.points').hide();
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.picture').hide();
-                    $('.avatar-contents .position[data-position="' + position + '"]').parent().children('.name-container').addClass('empty-avatar');
-                }
+                gameClient.getTableState(tableId);
             });
-            gameClient.setPlayerState(function (players) {
+            gameClient.setTableState(function (tableState) {
 
-                var playersCount = players.length;
+                var playerPosition = parseInt(sessionStorage.playerPosition);
+                var playersCount = 0;
 
-                if (playerId) {
+                //readjust position indexes
+                adjustPositionIndexes();
 
-                    for (var i = 1; i < 5; i++) {
-                        if (i != playerPosition) {
-                            $('.avatar-contents .position[data-position="' + i + '"]').parent().children('.name-container').children('.name').text('Empty');
-                            $('.avatar-contents .position[data-position="' + i + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
-                            $('.avatar-contents .position[data-position="' + i + '"]').parent().children('.name-container').children('.points').hide();
-                            $('.avatar-contents .position[data-position="' + i + '"]').parent().children('.picture').hide();
-                            $('.avatar-contents .position[data-position="' + i + '"]').parent().children('.name-container').addClass('empty-avatar');
-                        }
-                    }
+                $(tableState.PlayerDetails).each(function (index, item) {
 
-                    $(players).each(function (index, item) {
+                    //only if the player has a name
+                    if (item.PlayerName) {
+
                         //update the seat and show the player info
-                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').children('.name').text(players[index]);
+                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').children('.name').text(item.PlayerName);
                         $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
                         $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').children('.points').show();
                         $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').removeClass('empty-avatar');
                         $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.picture').attr('src', 'content/images/default-avatar-image.png');
                         $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.picture').show();
-                    });
-                } else {
-                    //set remaining positions
-                    for (var i = 0; i < players.length; i++) {
 
-                        var spot = '';
-                        switch (i) {
-                            case 0:
-                                $('.left .position').text('Position ' + (i + 1));
-                                $('.left .position').attr('data-position', i);
-                                spot = 'left';
-                                break;
-                            case 1:
-                                $('.top .position').text('Position ' + (i + 1));
-                                $('.top .position').attr('data-position', i);
-                                spot = 'top';
-                                break;
-                            case 2:
-                                $('.right .position').text('Position ' + (i + 1));
-                                $('.right .position').attr('data-position', i);
-                                spot = 'right';
-                                break;
-                            case 3:
-                                $('.bottom .position').text('Position ' + (i + 1));
-                                $('.bottom .position').attr('data-position', i);
-                                $('.leave-game').hide();
-                                spot = 'bottom';
-                                break;
-                            default:
-                        }
+                        playersCount++;
+                    } else {
 
-                        $('.' + spot + ' .name-container .name').text(players[i]);
-                        $('.' + spot + ' .name-container .points').text('(' + 0 + ')');
-                        $('.' + spot + ' .name-container .points').show();
-                        $('.' + spot + ' .name-container').removeClass('empty-avatar');
-                        $('.' + spot + ' .picture').attr('src', 'content/images/default-avatar-image.png');
-                        $('.' + spot + ' .picture').show();
+                        //remove player
+                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').children('.name').text('Empty');
+                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').children('.points').text('(' + 0 + ')');
+                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').children('.points').hide();
+                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.picture').hide();
+                        $('.avatar-contents .position[data-position="' + index + '"]').parent().children('.name-container').addClass('empty-avatar');
                     }
+                });
+
+                if (playerPosition !== -1) {
+
+                    //hide take seat button
+                    $('.take-seat').hide();
+
+                    //show leave table button
+                    $('.leave-game').show();
+
+                    //show ready up button
+                    $('.ready-up').show();
+                } else {
+
+                    //if the table is full dont show the button
+                    if (playersCount < 4) {
+                        //hide take seat button
+                        $('.take-seat').show();
+                    }
+
+                    //show leave table button
+                    $('.leave-game').hide();
+
+                    //show ready up button
+                    $('.ready-up').hide();
                 }
+
             });
             gameClient.playerSetCards(function (position) {
                 //show that this player has set their cards
@@ -125,13 +88,12 @@
                 //store player id
                 sessionStorage.playerPosition = position;
 
-                //update ui
-                updatePlayerPosition(playerName, position);
-
                 //update remaining positions
-                gameClient.getPlayerPositionsAtTable();
+                gameClient.getTableState(tableId);
             });
             gameClient.dealCards(function (cards) {
+                logger.logInfo(JSON.stringify(cards));
+
                 //display my cards
                 $.each(cards, function (index, item) {
 
@@ -164,58 +126,50 @@
             });
         };
 
-        var updatePlayerPosition = function (playerName, position) {
-            //hide take seat button
-            $('.take-seat').hide();
+        var adjustPositionIndexes = function () {
 
-            //show leave table button
-            $('.leave-game').show();
+            var positionArray = ['bottom', 'left', 'top', 'right'];
+            var currentPosition = parseInt(sessionStorage.playerPosition);
+            var adjustedPosition;
 
-            //show ready up button
-            $('.ready-up').show();
+            for (var i = 0; i < 4; i++) {
 
-            //update user box
-            $('.bottom .name-container .name').text(playerName);
-            $('.bottom .name-container .points').text('(' + 0 + ')');
-            $('.bottom .name-container .points').show();
-            $('.bottom .name-container').removeClass('empty-avatar');
-            $('.bottom .position').text('Position ' + (position + 1));
-            $('.bottom .position').attr('data-position', position);
-            $('.bottom .picture').attr('src', 'content/images/default-avatar-image.png');
-            $('.bottom .picture').show();
-
-            //set remaining positions
-            for (var i = 0; i < 3; i++) {
-
-                var pos = position + i + 1;
-
-                if (pos > 3) {
-                    pos = position - 1;
+                if (currentPosition > 3) {
+                    currentPosition = (currentPosition - 4);
+                }
+                if (currentPosition === -1) {
+                    currentPosition = 0;
                 }
 
-                switch (i) {
-                    case 0:
-                        $('.left .position').text('Position ' + (pos + 1));
-                        $('.left .position').attr('data-position', pos);
+                adjustedPosition = currentPosition;
+
+                switch (positionArray[i]) {
+                    case 'bottom':
+                        $('.bottom .position').text('Position ' + (adjustedPosition + 1));
+                        $('.bottom .position').attr('data-position', adjustedPosition);
                         break;
-                    case 1:
-                        $('.top .position').text('Position ' + (pos + 1));
-                        $('.top .position').attr('data-position', pos);
+                    case 'left':
+                        $('.left .position').text('Position ' + (adjustedPosition + 1));
+                        $('.left .position').attr('data-position', adjustedPosition);
                         break;
-                    case 2:
-                        $('.right .position').text('Position ' + (pos + 1));
-                        $('.right .position').attr('data-position', pos);
+                    case 'top':
+                        $('.top .position').text('Position ' + (adjustedPosition + 1));
+                        $('.top .position').attr('data-position', adjustedPosition);
                         break;
-                    default:
+                    case 'right':
+                        $('.right .position').text('Position ' + (adjustedPosition + 1));
+                        $('.right .position').attr('data-position', adjustedPosition);
+                        break;
                 }
+
+                currentPosition++;
             }
         };
 
         //reveal public objects
         return {
             //METHODS
-            register: register,
-            updatePlayerPosition: updatePlayerPosition
+            register: register
         };
     };
 

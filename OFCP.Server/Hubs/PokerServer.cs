@@ -21,12 +21,14 @@ namespace OFCP.Server.Hubs
         private readonly ICommandBus _cmdBus;
         private readonly ITableProjection _tables;
         private readonly IPlayerConnectionMap _playerConnectionMap;
+        private readonly IClientChannel _clientChannel;
 
-        public PokerServer(ICommandBus cmdBus, ITableProjection tableProjection, IPlayerConnectionMap playerConnectionMap)
+        public PokerServer(ICommandBus cmdBus, ITableProjection tableProjection, IPlayerConnectionMap playerConnectionMap, IClientChannel clientChannel)
         {
             _cmdBus = cmdBus;
             _tables = tableProjection;
             _playerConnectionMap = playerConnectionMap;
+            _clientChannel = clientChannel;
 
             ////TODO: Remove once we have accounts.//
             //_availablePlayerIds.Push(PLAYER_1_ID);
@@ -123,35 +125,18 @@ namespace OFCP.Server.Hubs
         #endregion
 
         #region Client To Server Methods
-        
-        //throwaway method to enable a single table site for now.  Someday the client
-        //will have the table id from a table selection in the lobby.
-        public void GetTableId()
-        {
-            while (_tables.ListTables().Count == 0)
-            {
-                Thread.Sleep(200);
-            }
-            var tableId = _tables.ListTables()[0].TableId;
-            Clients[Context.ConnectionId].setTableId(tableId);
 
+        public void InitializeTable(string tableId)
+        {
             //register the tableId as a group
             Groups.Add(Context.ConnectionId, tableId);
-        }
 
-        //TODO: Remove these hard coded id's once we have an Account system.//
-        //private const string PLAYER_1_ID = "49D04D385CF4464C8076EB60FA8913DB";
-        //private const string PLAYER_2_ID = "F1E3D466E6CA411796FE66EA9F350C79";
-        //private const string PLAYER_3_ID = "244916BCC142473A9C7037D9A92F11BB";
-        //private const string PLAYER_4_ID = "45E8F431B8D64BB2A11F5E6962BFCEE6";
-        //private Stack<string> _availablePlayerIds = new Stack<string>(4);
-        //////////////////////////////////////////////////////////////////////
+            //alert the client that the table is initialized
+            _clientChannel.TableInitialized(Context.ConnectionId);
+        }
 
         public void TakeSeat(string tableId, string playerId, string playerName)
         {
-            //TODO: Remove once we have accounts////
-            //var playerId = _availablePlayerIds.Pop();
-            ////////////////////////////////////////
             _playerConnectionMap.UpdateConnectionIdForPlayer(playerId, Context.ConnectionId);
             _cmdBus.Send(new SeatPlayerCommand(tableId, playerId, playerName));
             
@@ -164,18 +149,9 @@ namespace OFCP.Server.Hubs
 
         public void LeaveGame(string tableId, string playerId)
         {
-            //TODO: Remove once we have accounts////
-            //_availablePlayerIds.Push(playerId);
-            ////////////////////////////////////////
             _playerConnectionMap.RemovePlayer(playerId);
             _cmdBus.Send(new RemovePlayerCommand(tableId, playerId));
             Groups.Remove(Context.ConnectionId, tableId);
-        }
-
-        public void GetPlayerPositionsAtTable(string tableId)
-        {
-            var players = _tables.GetPlayerPositions(tableId).Select(x => x.PlayerName);
-            Clients[tableId].setPlayerState(players);
         }
 
         public void GetTableState(string tableId)
@@ -183,7 +159,7 @@ namespace OFCP.Server.Hubs
             var tableDetails = _tables.ListTables().Select(tbl => tbl.TableId == tableId);
             var playerDetails = _tables.GetPlayerPositions(tableId);
             var tableState = _tables.GetTableState(tableId);
-            Clients[Context.ConnectionId].setTableState(tableState);
+            _clientChannel.SetTableState(Context.ConnectionId, tableState);
         }
 
         /// <summary>
@@ -225,7 +201,7 @@ namespace OFCP.Server.Hubs
             //no need to go to the domain here.  Just broadcast a message and the client can randomly move the cards
             //so that it appears the players is doing something.
 
-            //Channel.BroadcastPlayerCardsRearranged(
+            //Channel.BroadcastPlayerCardsRearranged();
         }
 
         #endregion

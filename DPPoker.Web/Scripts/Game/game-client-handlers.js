@@ -6,24 +6,18 @@
 
         var gameClient = options.gameClient;
         var playerName = options.playerName;
-        var playerPosition = options.playerPosition;
         var playerId = options.playerId;
         var register = function () {
 
             //take seat handler
             $('.take-seat').click(function () {
-                //var promptName = prompt('Please enter your name.', '');
-                //if (promptName !== null && promptName !== "") {
-                //    sessionStorage.playerName = promptName;
-                //    gameClient.takeSeat({ playerName: promptName });
-                //} else {
-                //    alert('You must enter your name to take a seat.  Try again.');
-                //}
                 gameClient.takeSeat({ playerName: playerName, playerId: playerId });
             });
 
             //ready-up handler
             $('.ready-up').click(function () {
+
+                var playerPosition = parseInt(sessionStorage.playerPosition);
                 gameClient.playerReady({ playerId: playerId });
 
                 //show that the player is ready
