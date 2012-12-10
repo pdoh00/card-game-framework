@@ -13,6 +13,7 @@ namespace Game.OFCP.Tests
             var c2 = new Card(69634, "2s");
             var c3 = new Card(69634, "2s");
             var c4 = new Card(73730, "2h");
+            var c5 = new Card(1057803, "6h");
 
             Assert.IsTrue(c1.Equals(c1));
             Assert.IsTrue(c1.Equals(c2));
@@ -20,8 +21,10 @@ namespace Game.OFCP.Tests
             Assert.IsTrue(c1.Equals(c2) && c2.Equals(c3) && c1.Equals(c3));
             Assert.IsFalse(c1.Equals(null));
             Assert.IsTrue(c1 == c2 && c2 == c3 && c1 == c3);
-            Assert.IsFalse(c1.Equals(c4));
-            Assert.IsTrue(c1 != c4);
+            Assert.IsTrue(c1 == c4);
+
+            Assert.IsFalse(c1.Equals(c5));
+            Assert.IsTrue(c1 != c5);
         }
     }
 }

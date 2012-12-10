@@ -17,7 +17,6 @@ namespace Game.OFCP
     public class ThreeCardHand : IComparable<ThreeCardHand>
     {
         private Card[] _cards = new Card[3];
-        private int[] _cardValues = new int[3];
 
         public ThreeCardHand(params Card[] cards)
         {
@@ -27,10 +26,6 @@ namespace Game.OFCP
             _cards[0] = cards[0];
             _cards[1] = cards[1];
             _cards[2] = cards[2];
-
-            _cardValues[0] = cards[0].Value;
-            _cardValues[1] = cards[1].Value;
-            _cardValues[2] = cards[2].Value;
         }
 
         public int CompareTo(ThreeCardHand other)
@@ -46,23 +41,29 @@ namespace Game.OFCP
                 return -1;
 
             //set vs set
-            if(this.IsSet() && other.IsSet())
+            if (this.IsSet() && other.IsSet())
             {
-                var thisVal = _cards[0].Value * _cards[1].Value * _cards[2].Value;
-                var otherVal = other._cards[0].Value * other._cards[1].Value * other._cards[2].Value;
-
-                if (thisVal > otherVal)
-                    return 1;
-                if (otherVal > thisVal)
-                    return -1;
-                return 0;
+                return _cards[0].CompareTo(other._cards[0]);
             }
 
             //pair vs pair
             if (this.IsPair() && other.IsPair())
             {
+                var thisPair = _cards.GroupBy(c => c.Value & 0xFF).Where(g => g.Count() == 2).ToArray();
+                var thisPairKicker = _cards.GroupBy(c => c.Value & 0xFF).Where(g => g.Count() == 1).ToArray();
+                var otherPair = other._cards.GroupBy(c => c.Value & 0xFF).Where(g => g.Count() == 2).ToArray();
+                var otherPairKicker = other._cards.GroupBy(c => c.Value & 0xFF).Where(g => g.Count() == 1).ToArray();
 
+                if (thisPair[0].ElementAt(0) > otherPair[0].ElementAt(0))
+                    return 1;
+                if (thisPair[0].ElementAt(0) < otherPair[0].ElementAt(0))
+                    return -1;
+                if (thisPair[0].ElementAt(0) == otherPair[0].ElementAt(0))
+                {
+                    return thisPairKicker[0].ElementAt(0).CompareTo(otherPair[0].ElementAt(0));
+                }
             }
+
             //high card hand vs high card hand
 
             return 0;
@@ -70,15 +71,15 @@ namespace Game.OFCP
 
         public bool IsSet()
         {
-            return (_cards[0].Value & 0xFF) == (_cards[1].Value & 0xFF) && 
-                   (_cards[1].Value & 0xFF) == (_cards[2].Value & 0xFF);
+            return _cards[0].CompareTo(_cards[1])==0 &&
+                   _cards[1].CompareTo(_cards[2])==0;
         }
 
         public bool IsPair()
         {
-            return (_cards[0].Value & 0xFF) == (_cards[1].Value & 0xFF) ||
-                   (_cards[0].Value & 0xFF) == (_cards[2].Value & 0xFF) ||
-                   (_cards[1].Value & 0xFF) == (_cards[2].Value & 0xFF);
+            return _cards[0].CompareTo(_cards[1])==0 ||
+                   _cards[0].CompareTo(_cards[2]) == 0 ||
+                   _cards[1].CompareTo(_cards[2]) == 0;
         }
 
         public override string ToString()

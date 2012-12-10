@@ -53,7 +53,6 @@
     <Compile Include="ICommandHandler.cs" />
     <Compile Include="ICommandHandlerRegistry.cs" />
     <Compile Include="ITableProjection.cs" />
-    <Compile Include="IVersionedEvent.cs" />
     <Compile Include="MemoryCommandBus.cs" />
     <Compile Include="MemoryEventBus.cs" />
     <Compile Include="IEvent.cs" />
