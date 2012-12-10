@@ -32,7 +32,7 @@ namespace OFCP.Server
             GetPokerServerHubContext().Clients[tableId].playerSetCards(position);
         }
 
-        public void BroadcastPlayerCardsRearranged(string tableId, int playerPosition, bool[] cards)
+        public void BroadcastPlayerCardsRearranged(string tableId, int playerPosition, List<CardPositionState> cards)
         {
             GetPokerServerHubContext().Clients[tableId].playerCardsRearranged(playerPosition, cards);
         }

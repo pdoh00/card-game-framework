@@ -13,6 +13,8 @@
         
         var pokerServer = $.connection.pokerServer;
         var tableId = options.tableId;
+        var gameId;
+        var widgets;
         var logger = options.logger;
         var playerId = options.playerId;
         var playerName = options.playerName;
@@ -193,6 +195,10 @@
         var getTableState = function () {
             pokerServer.getTableState(tableId);
         };
+        //Requests to get the table state
+        var rearrangeHand = function (cards) {
+            pokerServer.rearrangeHand(tableId, parseInt(sessionStorage.playerPosition), cards);
+        };
 
         //#endregion
 
@@ -200,11 +206,14 @@
         return {
             //FIELDS
             tableId: tableId,
+            widgets: widgets,
+            gameId: gameId,
             //METHODS
             takeSeat: takeSeat,
             playerReady: playerReady,
             leaveGame: leaveGame,
             getTableState: getTableState,
+            rearrangeHand: rearrangeHand,
             //SERVER CALLBACK HANDLERS
             broadcastToConsole: setBroadcastToConsoleHandler,
             dealCards: setDealCardsHandler,

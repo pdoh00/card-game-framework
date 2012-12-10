@@ -29,67 +29,9 @@ namespace OFCP.Server.Hubs
             _tables = tableProjection;
             _playerConnectionMap = playerConnectionMap;
             _clientChannel = clientChannel;
-
-            ////TODO: Remove once we have accounts.//
-            //_availablePlayerIds.Push(PLAYER_1_ID);
-            //_availablePlayerIds.Push(PLAYER_2_ID);
-            //_availablePlayerIds.Push(PLAYER_3_ID);
-            //_availablePlayerIds.Push(PLAYER_4_ID);
-            /////////////////////////////////////////
         }
-
-        //***********************************************************************
-        //THIS METHOD WILL BE DELETED AFTER I GET THE DRAG DROP FIGURED OUT
-        //***********************************
-        public void GetCards()
-        {
-            var cardArray = new string[] { 
-                "Ah", "As", "Ac", "Ad",
-                "Kh", "Ks", "Kc", "Kd",
-                "Qh", "Qs", "Qc", "Qd",
-                "Jh", "Js", "Jc", "Jd",
-                "Th", "Ts", "Tc", "Td",
-                "9h", "9s", "9c", "9d",
-                "8h", "8s", "8c", "8d",
-                "7h", "7s", "7c", "7d",
-                "6h", "6s", "6c", "6d",
-                "5h", "5s", "5c", "5d",
-                "4h", "4s", "4c", "4d",
-                "3h", "3s", "3c", "3d",
-                "2h", "2s", "2c", "2d"
-            };
-
-            var cardsList = new List<string>();
-            var dictChecker = new Dictionary<int, int>();
-            var rnd = new Random(DateTime.Now.Second + DateTime.Now.Minute + DateTime.Now.Hour);
-            for (int i = 0; i < 13; i++)
-            {
-                var rndPosition = rnd.Next(0, 51);
-                var checkerVal = 0;
-
-                while (dictChecker.TryGetValue(rndPosition, out checkerVal))
-                {
-                    rndPosition = rnd.Next(0, 51);
-                }
-
-                cardsList.Add(cardArray[rndPosition]);
-                dictChecker.Add(rndPosition, rndPosition);
-            }
-
-            //call client method
-            Clients[Context.ConnectionId].dealCards(cardsList.ToArray());
-        }
-        //***********************************************************************
-        //THIS METHOD WILL BE DELETED AFTER I GET THE DRAG DROP FIGURED OUT
-        //***********************************
 
         #region Server To Client Methods
-
-        public void DealToPlayer(string clientId, string[] cards)
-        {
-            //this is to an individual player
-            Clients[clientId].dealToPlayer(cards);
-        }
 
         public void GameAboutToStart()
         {
@@ -113,13 +55,6 @@ namespace OFCP.Server.Hubs
         {
             //this is broadcast to the group (table)
             //Clients[tableId].gameOver();
-        }
-
-        //this is the global broadcast messages to console method
-        //   very userful when debugging or wanting to monitor traffic
-        public void BroadcastToConsole(string message)
-        {
-            //BroadcastMessage("Need tableId here", message);
         }
 
         #endregion
@@ -195,19 +130,14 @@ namespace OFCP.Server.Hubs
             _cmdBus.Send(new SetPlayerReadyCommand(tableId, playerId));
         }
 
-        public void RearrangeHand(string tableId, string playerId, bool[] cards)
+        public void RearrangeHand(string tableId, int playerPosition, List<CardPositionState> cards)
         {
-            //every time a client rearranges his hand this method is called
-            //no need to go to the domain here.  Just broadcast a message and the client can randomly move the cards
-            //so that it appears the players is doing something.
-
-            //Channel.BroadcastPlayerCardsRearranged();
+            _clientChannel.BroadcastPlayerCardsRearranged(tableId, playerPosition, cards);
         }
 
         #endregion
 
         #region IDisconnect
-
 
         public Task Disconnect()
         {

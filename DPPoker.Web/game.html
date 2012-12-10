@@ -91,7 +91,9 @@
             gameClientHandlers.register();
 
             //initialize widgets
-            var gameWidgets = DEVGUYS.gameWidgets.create();
+            var gameWidgets = DEVGUYS.gameWidgets.create({
+                gameClient: gameClient
+            });
             gameWidgets.initCardSortables();
 
         });
@@ -150,7 +152,7 @@
 
         <!-- CARD SETS -->
         <div class="topSet">
-            <div class="small-card-set">
+            <div class="small-card-set" data-position="1">
                 <div class="sm-card-pos0 small-card-empty"></div>
                 <div class="sm-card-pos1 small-card-empty"></div>
                 <div class="sm-card-pos2 small-card-empty"></div>
@@ -167,7 +169,7 @@
             </div>
         </div>
         <div class="leftSet">
-            <div class="small-card-set">
+            <div class="small-card-set" data-position="0">
                 <div class="sm-card-pos0 small-card-empty"></div>
                 <div class="sm-card-pos1 small-card-empty"></div>
                 <div class="sm-card-pos2 small-card-empty"></div>
@@ -184,7 +186,7 @@
             </div>
         </div>
         <div class="rightSet">
-            <div class="small-card-set">
+            <div class="small-card-set" data-position="2">
                 <div class="sm-card-pos0 small-card-empty"></div>
                 <div class="sm-card-pos1 small-card-empty"></div>
                 <div class="sm-card-pos2 small-card-empty"></div>
@@ -215,11 +217,14 @@
                     </ul>
                 </div>
             </div>
+            <div>
+                <input class="set-hand" type="button" value="Set Hand" style="display: none;" />
+            </div>
         </div>
 
     </div>
 
-    <div class="my-cards">
+    <div class="my-cards" style="display: none;">
         <div class="large-card-set">
             <div>
                 <ul id="sortableSource1" class="connectedSortable">

@@ -1,4 +1,6 @@
-﻿(function (namespace) {
+﻿/// <reference path="../Libs/jquery-1.8.2.js" />
+
+(function (namespace) {
     var functionName = 'gameServerCallbacks';
 
     //creates an object to handle all server 2 clients callbacks
@@ -83,6 +85,13 @@
             });
             gameClient.playerSetCards(function (position) {
                 //show that this player has set their cards
+                var element = $('.small-card-set[data-position="' + position + '"]');
+                for (var i = 0; i < 13; i++) {
+                    var slot = $(element).find('.sm-card-pos' + i);
+                    slot.attr('class', '');
+                    slot.addClass('small-card-ready');
+                }
+
             });
             gameClient.playerRegistered(function (playerId, position) {
                 //store player id
@@ -93,6 +102,15 @@
             });
             gameClient.dealCards(function (cards) {
                 logger.logInfo(JSON.stringify(cards));
+
+                //show my cards
+                $('.my-cards').show();
+
+                //clear out all cards
+                gameClient.widgets.clearCards();
+
+                //enable sortables widget
+                gameClient.widgets.enableSortables();
 
                 //display my cards
                 $.each(cards, function (index, item) {
@@ -106,26 +124,85 @@
                     element.addClass('drag');
                     element.addClass('my-card-pos' + index);
 
+                    //add card to data-card
+                    $('.my-cards .my-card-pos' + index).attr('data-card', item);
+
                     //set card class
                     $('.my-cards .my-card-pos' + index).addClass('_' + item);
                 });
             });
             gameClient.playerReadiedUp(function (position) {
                 //show that the player is ready
-                $('.avatar-contents .position[data-position="' + position + '"]').parent().addClass('player-ready', 500);
+                $('.avatar-contents .position[data-position="' + position + '"]').parent().addClass('player-ready');
             });
             gameClient.playerCardsRearranged(function (position, cards) {
-                //update the cards at that position
+
+                if (position === parseInt(sessionStorage.playerPosition)) {
+                    return;
+                }
+
+                //update the cards
+                var element = $('.small-card-set[data-position="' + position + '"]');
+                var slotChangedA;
+                var slotChangedB;
+
+                for (var i = 0; i < 13; i++) {
+                    var slot = $(element).find('.sm-card-pos' + i);
+                    var hasCard = cards[i].HasCard;
+                    var hasChanged = cards[i].HasChanged;
+
+                    if (!hasCard) {
+                        slot.removeClass('small-card-populated');
+                        slot.addClass('small-card-empty');
+                    } else {
+                        slot.addClass('small-card-populated');
+                        slot.removeClass('small-card-empty');
+                    }
+
+                    //set which slots have changed for animaiton
+                    if (hasChanged) {
+                        if (slotChangedA) {
+                            slotChangedB = slot;
+                        } else {
+                            slotChangedA = slot;
+                        }
+                    }
+                }
+
+                //fire animation for slot A
+                $(slotChangedA).removeClass("small-card-populated", 125, function () {
+                    $(slotChangedA).addClass("small-card-empty", 125, function () {
+                        $(slotChangedA).removeClass("small-card-empty", 125, function () {
+                            $(slotChangedA).addClass("small-card-populated", 125, function () { });
+                        });
+                    });
+                });
+
+                //fire animaiton for slot B
+                $(slotChangedB).removeClass("small-card-populated", 125, function () {
+                    $(slotChangedB).addClass("small-card-empty", 125, function () {
+                        $(slotChangedB).removeClass("small-card-empty", 125, function () {
+                            $(slotChangedB).addClass("small-card-populated", 125, function () { });
+                        });
+                    });
+                });
+
+                return;
             });
             gameClient.gameStarted(function (gameId, timestamp) {
                 //alert that the game has started
-                //start timer for the 1st round
+                alert('The game#' + gameId + ' has started');
+                gameClient.gameId = gameId;
+
+                //remove player ready indicators
+                for (var i = 0; i < 4; i++) {
+                    $('.avatar-contents .position[data-position="' + i + '"]').parent().removeClass('player-ready');
+                }
             });
             gameClient.deckShuffled(function () {
                 //play deck shuffle sound & animation
             });
         };
-
         var adjustPositionIndexes = function () {
 
             var positionArray = ['bottom', 'left', 'top', 'right'];
@@ -151,14 +228,17 @@
                     case 'left':
                         $('.left .position').text('Position ' + (adjustedPosition + 1));
                         $('.left .position').attr('data-position', adjustedPosition);
+                        $('.leftSet > .small-card-set').attr('data-position', adjustedPosition);
                         break;
                     case 'top':
                         $('.top .position').text('Position ' + (adjustedPosition + 1));
                         $('.top .position').attr('data-position', adjustedPosition);
+                        $('.topSet > .small-card-set').attr('data-position', adjustedPosition);
                         break;
                     case 'right':
                         $('.right .position').text('Position ' + (adjustedPosition + 1));
                         $('.right .position').attr('data-position', adjustedPosition);
+                        $('.rightSet > .small-card-set').attr('data-position', adjustedPosition);
                         break;
                 }
 
