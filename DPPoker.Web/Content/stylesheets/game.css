@@ -149,6 +149,7 @@
 
 .name-container
 {
+    margin-top: -2px;
 }
 .picture
 {
@@ -170,6 +171,7 @@
 {
     font-size: 0.6em;
     color: #fff;
+    margin-top: -2px;
 }
 
 .take-seat
@@ -198,8 +200,26 @@
 
 .player-ready
 {
+    -webkit-box-shadow: inset 0 0 10px #008000; 
+    -moz-box-shadow: inset 0 0 10px #008000; 
+    box-shadow: inset 0 0 10px #008000;
     border: 3px solid #008000;
-    -webkit-box-shadow: inset 0 0 5px #008000; -moz-box-shadow: inset 0 0 5px #008000; box-shadow: inset 0 0 5px #008000;
+    width: 124px;
+    height: 103px;
+    margin-left: 0px;
+    margin-top: 0px;
+}
+.player-ready .picture
+{
+    margin-top: -3px;
+}
+.player-ready .name-container
+{
+    margin-left: -1px;
+}
+.player-ready .position
+{
+    margin-left: -1px;
 }
 
 
@@ -256,6 +276,22 @@
 
 .small-card-empty
 {
+    width: 34px;
+	height: 48px;
+    border: 2px solid #8d1115;
+    -webkit-box-shadow: inset 0 0 5px #000; -moz-box-shadow: inset 0 0 5px #000; box-shadow: inset 0 0 5px #000;
+}
+.small-card-populated
+{
+    background-color: #FFF558;
+    width: 34px;
+	height: 48px;
+    border: 2px solid #8d1115;
+    -webkit-box-shadow: inset 0 0 5px #000; -moz-box-shadow: inset 0 0 5px #000; box-shadow: inset 0 0 5px #000;
+}
+.small-card-ready 
+{
+    background-color: #008000;
     width: 34px;
 	height: 48px;
     border: 2px solid #8d1115;

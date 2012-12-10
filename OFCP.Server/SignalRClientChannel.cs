@@ -32,7 +32,7 @@ namespace OFCP.Server
             GetPokerServerHubContext().Clients[tableId].playerSetCards(position);
         }
 
-        public void BroadcastPlayerCardsRearranged(string tableId, int playerPosition, bool[] cards)
+        public void BroadcastPlayerCardsRearranged(string tableId, int playerPosition, List<CardPositionState> cards)
         {
             GetPokerServerHubContext().Clients[tableId].playerCardsRearranged(playerPosition, cards);
         }
@@ -67,6 +67,16 @@ namespace OFCP.Server
         {
             var connectionId = _playerConnectionMap.GetConnectionIdForPlayer(playerId);
             GetPokerServerHubContext().Clients[connectionId].playerRegistered(playerId, position);
+        }
+
+        public void TableInitialized(string connectionId)
+        {
+            GetPokerServerHubContext().Clients[connectionId].tableInitialized();
+        }
+
+        public void SetTableState(string connectionId, TableState tableState)
+        {
+            GetPokerServerHubContext().Clients[connectionId].setTableState(tableState);
         }
 
         private static IHubContext GetPokerServerHubContext()
