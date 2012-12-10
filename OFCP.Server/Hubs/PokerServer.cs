@@ -72,17 +72,8 @@ namespace OFCP.Server.Hubs
 
         public void TakeSeat(string tableId, string playerId, string playerName)
         {
-<<<<<<< HEAD
-            //TODO: Should we check right here if the table/player are real?
-
-            //TODO: Remove once we have accounts////
-            //var playerId = _availablePlayerIds.Pop();
-            ////////////////////////////////////////
-=======
->>>>>>> aa622f9778ab04d61c3cda3e1e10b3208fcf8066
             _playerConnectionMap.UpdateConnectionIdForPlayer(playerId, Context.ConnectionId);
-            _cmdBus.Send(new SeatPlayerCommand(tableId, playerId, playerName));
-            
+            _cmdBus.Send(new SeatPlayerCommand(tableId, playerId, playerName));   
         }
 
         public void Reconnect(string playerId)
