@@ -69,6 +69,22 @@ namespace GameDriver
             {
                 Broadcaster(String.Format("Player {0} was seated at position {1}", clientId, position));
             }
+
+
+            public void BroadcastPlayerCardsRearranged(string tableId, int playerPosition, List<CardPositionState> cards)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void TableInitialized(string connectionId)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetTableState(string connectionId, TableState tableState)
+            {
+                throw new NotImplementedException();
+            }
         }
 
 
