@@ -6,3 +6,5 @@ This card game framework is a work in progress and nowhere near even a prototype
 Until then...Stay Tuned.
 
 -- THE DEV GUYS!
+
+License: Do whatever you want with the code, learn, copy, reuse, extend, fix bugs. We look forward to your pull requests!
