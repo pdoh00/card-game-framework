@@ -49,18 +49,19 @@ namespace Game.OFCP
             //pair vs pair
             if (this.IsPair() && other.IsPair())
             {
-                var thisPair = _cards.GroupBy(c => c.Value & 0xFF).Where(g => g.Count() == 2).ToArray();
-                var thisPairKicker = _cards.GroupBy(c => c.Value & 0xFF).Where(g => g.Count() == 1).ToArray();
-                var otherPair = other._cards.GroupBy(c => c.Value & 0xFF).Where(g => g.Count() == 2).ToArray();
-                var otherPairKicker = other._cards.GroupBy(c => c.Value & 0xFF).Where(g => g.Count() == 1).ToArray();
+                //this is some ugly code.  Prime refactoring target.
+                var thisPair = _cards.GroupBy(c => c.Value & 0xFF).Where(g => g.Count() == 2).ToList()[0].ToList();
+                var thisPairKicker = _cards.GroupBy(c => c.Value & 0xFF).Where(g => g.Count() == 1).ToList()[0].ToList()[0];
+                var otherPair = other._cards.GroupBy(c => c.Value & 0xFF).Where(g => g.Count() == 2).ToList()[0].ToList();
+                var otherPairKicker = other._cards.GroupBy(c => c.Value & 0xFF).Where(g => g.Count() == 1).ToList()[0].ToList()[0];
 
-                if (thisPair[0].ElementAt(0) > otherPair[0].ElementAt(0))
+                if (thisPair[0]> otherPair[0])
                     return 1;
-                if (thisPair[0].ElementAt(0) < otherPair[0].ElementAt(0))
+                if (thisPair[0] < otherPair[0])
                     return -1;
-                if (thisPair[0].ElementAt(0) == otherPair[0].ElementAt(0))
+                if (thisPair[0] == otherPair[0])
                 {
-                    return thisPairKicker[0].ElementAt(0).CompareTo(otherPair[0].ElementAt(0));
+                    return thisPairKicker.CompareTo(otherPairKicker);
                 }
             }
 
