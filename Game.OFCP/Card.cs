@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Game.OFCP
 {
-    public struct Card : IEquatable<Card>
+    public struct Card : IEquatable<Card>, IComparable<Card>
     {
         public readonly int Value;
         public readonly string Text;
@@ -19,13 +19,12 @@ namespace Game.OFCP
 
         public override string ToString()
         {
-            return String.Format("{0}, {1}",Text, Value);
+            return String.Format("{0}, {1}", Text, Value);
         }
 
         public bool Equals(Card other)
         {
-            return Value == other.Value &&
-                String.Compare(Text, other.Text, true) == 0;
+            return (Value & 0xFF) == (other.Value & 0xFF);
         }
 
         // override object.Equals
@@ -65,9 +64,31 @@ namespace Game.OFCP
             return leftCard.Equals(rightCard); //will handle if rightCard is null
         }
 
-        public static bool operator !=(Card leftCard , Card rightCard)
+        public static bool operator !=(Card leftCard, Card rightCard)
         {
             return !(leftCard == rightCard);
+        }
+
+        public static bool operator >(Card leftCard, Card rightCard)
+        {
+            return (leftCard.Value & 0xFF) > (rightCard.Value & 0xFF);
+        }
+
+        public static bool operator <(Card leftCard, Card rightCard)
+        {
+            return (leftCard.Value & 0xFF) < (rightCard.Value & 0xFF);
+        }
+
+        public int CompareTo(Card other)
+        {
+            if ((Value & 0xFF) > (other.Value & 0xFF))
+                return 1;
+            if ((Value & 0xFF) < (other.Value & 0xFF))
+                return -1;
+            if ((Value & 0xFF) == (other.Value & 0xFF))
+                return 0;
+
+            throw new InvalidOperationException("Card equality is not working correctly.");
         }
     }
 }
