@@ -65,7 +65,7 @@ namespace Game.OFCP.Tests
             var pair = new ThreeCardHand(new Card(268471337, "Ac"), new Card(268454953, "Ad"), new Card(134253349, "Kc"));
 
             //act
-            
+
             //assert
             Assert.IsTrue(set.CompareTo(pair) > 0);
         }
@@ -189,6 +189,59 @@ namespace Game.OFCP.Tests
 
             //assert
             Assert.IsTrue(bigKickerPair.CompareTo(smallKickerPair) > 0);
+        }
+
+        [TestMethod]
+        public void high_card_hand_with_no_matches_between_hands_goes_to_hand_with_highest_card()
+        {
+            //arrange
+            var highCardHand1 = new ThreeCardHand(new Card(CardId.AceClubs, "Ac"), new Card(CardId.TenSpades, "Ts"), new Card(CardId.EightHearts, "8h"));
+            var highCardHand2 = new ThreeCardHand(new Card(CardId.KingSpades, "Ks"), new Card(CardId.NineDiamonds, "9d"), new Card(CardId.SixHearts, "6h"));
+
+            //act
+
+            //assert
+            Assert.IsTrue(highCardHand1.CompareTo(highCardHand2) > 0);
+            Assert.IsTrue(highCardHand2.CompareTo(highCardHand1) < 0);
+        }
+
+        [TestMethod]
+        public void high_card_hand_with_one_match_goes_to_hand_with_second_biggest_card()
+        {
+            //arrange
+            var highCardHand1 = new ThreeCardHand(new Card(CardId.AceClubs, "Ac"), new Card(CardId.TenSpades, "Ts"), new Card(CardId.EightHearts, "8h"));
+            var highCardHand2 = new ThreeCardHand(new Card(CardId.AceDiamonds, "Ad"), new Card(CardId.NineDiamonds, "9d"), new Card(CardId.SixHearts, "6h"));
+            //act
+
+            //assert
+            Assert.IsTrue(highCardHand1.CompareTo(highCardHand2) > 0);
+            Assert.IsTrue(highCardHand2.CompareTo(highCardHand1) < 0);
+        }
+
+        [TestMethod]
+        public void high_card_hand_with_two_matches_goes_to_hand_with_third_biggest_card()
+        {
+            //arrange
+            var highCardHand1 = new ThreeCardHand(new Card(CardId.AceClubs, "Ac"), new Card(CardId.TenSpades, "Ts"), new Card(CardId.EightHearts, "8h"));
+            var highCardHand2 = new ThreeCardHand(new Card(CardId.AceDiamonds, "Ad"), new Card(CardId.TenDiamonds, "Td"), new Card(CardId.SixHearts, "6h"));
+            //act
+
+            //assert
+            Assert.IsTrue(highCardHand1.CompareTo(highCardHand2) > 0);
+            Assert.IsTrue(highCardHand2.CompareTo(highCardHand1) < 0);
+        }
+
+        [TestMethod]
+        public void high_card_hand_with_all_matches_are_equal()
+        {
+            //arrange
+            var highCardHand1 = new ThreeCardHand(new Card(CardId.AceClubs, "Ac"), new Card(CardId.TenSpades, "Ts"), new Card(CardId.EightHearts, "8h"));
+            var highCardHand2 = new ThreeCardHand(new Card(CardId.AceDiamonds, "Ad"), new Card(CardId.TenDiamonds, "Td"), new Card(CardId.EightSpades, "8s"));
+            //act
+
+            //assert
+            Assert.IsTrue(highCardHand1.CompareTo(highCardHand2) == 0);
+            Assert.IsTrue(highCardHand2.CompareTo(highCardHand1) == 0);
         }
     }
 }

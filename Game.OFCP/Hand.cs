@@ -66,6 +66,20 @@ namespace Game.OFCP
             }
 
             //high card hand vs high card hand
+            var h1Sorted = this._cards.ToList();
+            h1Sorted.Sort((c,d) => c.Value.CompareTo(d.Value));
+
+            var h2Sorted = other._cards.ToList();
+            h2Sorted.Sort((c, d) => c.Value.CompareTo(d.Value));
+
+            if (h1Sorted[0] > h2Sorted[0]) return 1;
+            if (h1Sorted[0] < h2Sorted[0]) return -1;
+
+            if (h1Sorted[1] > h2Sorted[1]) return 1;
+            if (h1Sorted[1] < h2Sorted[1]) return -1;
+
+            if (h1Sorted[2] > h2Sorted[2]) return 1;
+            if (h1Sorted[2] < h2Sorted[2]) return -1;
 
             return 0;
         }

@@ -6,6 +6,65 @@ using System.Threading.Tasks;
 
 namespace Game.OFCP
 {
+    public enum CardId
+    {
+        TwoClubs = 98306,
+        ThreeClubs = 164099,
+        FourClubs = 295429,
+        FiveClubs = 557831,
+        SixClubs = 1082379,
+        SevenClubs = 2131213,
+        EightClubs = 4228625,
+        NineClubs = 8423187,
+        TenClubs = 16812055,
+        JackClubs = 33589533,
+        QueenClubs = 67144223,
+        KingClubs = 134253349,
+        AceClubs = 268471337,
+
+        TwoHearts = 73730,
+        ThreeHearts = 139523,
+        FourHearts = 270853,
+        FiveHearts = 533255,
+        SixHearts = 1057803,
+        SevenHearts = 2106637,
+        EightHearts = 4204049,
+        NineHearts = 8398611,
+        TenHearts = 16787479,
+        JackHearts = 33564957,
+        QueenHearts = 67119647,
+        KingHearts = 134228773,
+        AceHearts = 268446761,
+
+        TwoDiamonds = 81922,
+        ThreeDiamonds = 147715,
+        FourDiamonds = 279045,
+        FiveDiamonds = 541447,
+        SixDiamonds = 1065995,
+        SevenDiamonds = 2114829,
+        EightDiamonds = 4212241,
+        NineDiamonds = 8406803,
+        TenDiamonds = 16795671,
+        JackDiamonds = 33573149,
+        QueenDiamonds = 67127839,
+        KingDiamonds = 134236965,
+        AceDiamonds = 268454953,
+
+        TwoSpades = 69634,
+        ThreeSpades = 135427,
+        FourSpades = 266757,
+        FiveSpades = 529159,
+        SixSpades = 1053707,
+        SevenSpades = 2102541,
+        EightSpades = 4199953,
+        NineSpades = 8394515,
+        TenSpades = 16783383,
+        JackSpades = 33560861,
+        QueenSpades = 67115551,
+        KingSpades = 134224677,
+        AceSpades = 268442665
+    }
+
     public struct Card : IEquatable<Card>, IComparable<Card>
     {
         public readonly int Value;
@@ -14,6 +73,12 @@ namespace Game.OFCP
         public Card(int value, string text)
         {
             Value = value;
+            Text = text;
+        }
+
+        public Card(CardId value, string text)
+        {
+            Value = (int)value;
             Text = text;
         }
 
